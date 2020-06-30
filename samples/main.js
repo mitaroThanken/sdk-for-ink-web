@@ -7,13 +7,13 @@ addEventListener("DOMContentLoaded", async (event) => {
 	document.getElementById("APPVersion").textContent = pkg.version;
 	document.getElementById("SDKVersion").textContent = version;
 
+	$(".app").css("visibility", "hidden");
 	app.init();
 
 	if (!localStorage.getItem("sample")) return;
 
 	layout.init();
 
-	$(".app").css("visibility", "hidden");
 	await app.initInkController();
 	$(".app").css("visibility", "");
 });

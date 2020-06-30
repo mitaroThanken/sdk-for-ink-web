@@ -8,7 +8,6 @@
 
 	<link rel="stylesheet" type="text/css" href="/styles/styles.css" />
 	<link rel="stylesheet" type="text/css" href="/styles/navigation.css" />
-	<link rel="stylesheet" type="text/css" href="/styles/tabs.css" />
 
 	<script type="text/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
 
@@ -83,13 +82,12 @@
 			<ol>
 				<li>Inking</li>
 				<ol>
-					<li><a href="javascript: void(0)" id="sample1" onclick="app.redirect(1)">Vector inking</a></li>
-					<li><a href="javascript: void(0)" id="sample2" onclick="app.redirect(2)">Raster inking</a></li>
+					<li><a href="javascript: void(0)" id="sample1" onclick="app.redirect(1)">Vector Ink Demo</a></li>
+					<li><a href="javascript: void(0)" id="sample2" onclick="app.redirect(2)">Raster Ink Demo</a></li>
 				</ol>
 				<li>Mixed Canvas</li>
 				<ol>
-					<li><a href="javascript: void(0)" id="sample3" onclick="app.redirect(3)">Mixed inking (WebGL canvas + Vector brush)</a></li>
-					<!--li><a href="javascript: void(0)" id="sample4" onclick="app.redirect(4)">Mixed inking (2D canvas + Raster brush)</a></li-->
+					<li><a href="javascript: void(0)" id="sample3" onclick="app.redirect(3)">Mixed Ink Demo (WebGL canvas + Vector brush)</a></li>
 				</ol>
 				</li>
 			</ol>
@@ -121,8 +119,6 @@
 					<img id="marker" src="/images/btn_tools/btn_marker.png" title="Marker" class="Tool" alt="" />
 				</span>
 
-				<img id="basic" src="/images/btn_tools/btn_basic_brush.png" class="Tool BasicTool DelimiterLeft" title="Basic Mode Tool" alt="" />
-
 				<span class="RasterPart">
 					<img id="pencil" src="/images/btn_tools/btn_pencil.png" title="Pencil" class="Tool" alt="" />
 					<img id="waterBrush" src="/images/btn_tools/btn_water_brush.png" title="Water Brush" class="Tool" alt="" />
@@ -133,9 +129,6 @@
 				<img id="eraser" src="/images/btn_tools/eraser.png" class="Tool RasterPart DelimiterLeft" title="Eraser" alt="" />
 
 				<span class="VectorPart PureVector DelimiterLeft">
-<!--
-					<img id="eraser" src="/images/btn_tools/eraser_partial_stroke.png" class="Tool" title="Eraser" alt="" />
--->
 					<img id="eraserStroke" src="/images/btn_tools/eraser_delayed_partial_stroke.png" class="Tool" title="Delayed Stroke Eraser" alt="" />
 					<img id="eraserWholeStroke" src="/images/btn_tools/eraser_whole_stroke.png" class="Tool" title="Whole Stroke Eraser" alt="" />
 				</span>

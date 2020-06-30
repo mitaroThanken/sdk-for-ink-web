@@ -39,7 +39,7 @@
 	stroke-dasharray: 5;
 	-webkit-animation: dash 4s linear infinite;
 	animation: dash 4s linear infinite;
-} /*stroke-dashoffset: 10;*/
+}
 
 @-webkit-keyframes dash {
 	from {

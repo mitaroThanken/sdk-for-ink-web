@@ -171,7 +171,7 @@ class InkCanvas extends InkController {
 			this.intersector.updateSegmentation(pathPart.added);
 
 			if (pathPart.phase == InkBuilder.Phase.END) {
-				let intersection = this.intersector.intersect2(this.builder.getInkPath());
+				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath());
 				this.split(intersection);
 
 				this.abort();
@@ -179,7 +179,6 @@ class InkCanvas extends InkController {
 		}
 		else {
 			let intersection = this.intersector.intersect(pathPart.added);
-// this.drawPath(pathPart);
 			this.split(intersection);
 		}
 	}

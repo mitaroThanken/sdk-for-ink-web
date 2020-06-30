@@ -3,31 +3,6 @@ let context = new PathPointContext();
 let config = {
 	tools: {
 		/* ******* VECTOR TOOLS ******* */
-		basic: {
-			brush: BrushPalette.basic,
-
-			dynamics: {
-				size: {
-					value: {
-						min: 2,
-						max: 6
-					},
-
-					velocity: {
-						min: 100,
-						max: 4000
-					},
-
-					pressure: {
-						min: 0.2,
-						max: 0.8
-					}
-				}
-			},
-
-			statics: {}
-		},
-
 		pen: {
 			brush: BrushPalette.circle,
 
@@ -206,8 +181,8 @@ let config = {
 			dynamics: {
 				size: {
 					value: {
-						min: 4,
-						max: 5
+						min: 5,
+						max: 10
 					},
 
 					velocity: {
@@ -540,7 +515,6 @@ let config = {
 			},
 
 			statics: {
-				// size: 3,
 				red: 255,
 				green: 255,
 				blue: 255,
@@ -549,7 +523,6 @@ let config = {
 		},
 
 		eraserRaster: {
-			// brush: BrushPalette.circle,
 			brush: BrushPalette.eraserGL,
 			blendMode: BlendMode.DESTINATION_OUT,
 
@@ -595,7 +568,6 @@ let config = {
 			},
 
 			statics: {
-				// size: 3,
 				red: 255,
 				green: 255,
 				blue: 255,
@@ -604,8 +576,7 @@ let config = {
 		},
 
 		eraserWholeStroke: {
-			// brush: BrushPalette.circle,
-			brush: BrushPalette.basic2,
+			brush: BrushPalette.basic,
 			intersector: new Intersector(Intersector.Mode.WHOLE_STROKE),
 
 			statics: {
@@ -673,7 +644,6 @@ let config = {
 	getOptions(sample, toolID, color) {
 		let toolConfig = this.tools[toolID];
 
-		context.basicMode = (toolID == "basic");
 		context.reset(sample, toolConfig.brush, color, toolConfig.dynamics, toolConfig.statics)
 
 		return {
@@ -687,22 +657,19 @@ let config = {
 				layout: context.layout,
 				pathPointCalculator: context.calculate.bind(context),
 				pathPointProps: context.statics
-			}, config.getPipelineOptions(context.basicMode, toolConfig.brush))
+			}, config.getPipelineOptions(toolConfig.brush))
 		};
 	},
 
-	getPipelineOptions(basicMode, brush) {
-		let result = {basicMode};
+	getPipelineOptions(brush) {
+		let result = {};
+		let brushType = (brush instanceof BrushGL) ? "raster" : "vector";
 
-		if (!basicMode) {
-			let brushType = (brush instanceof BrushGL) ? "raster" : "vector";
+		result.movingAverageWindowSize = config.pipeline.movingAverageWindowSize;
+		result.errorThreshold = config.pipeline.errorThreshold;
+		result.epsilon = config.pipeline.epsilon;
 
-			result.movingAverageWindowSize = config.pipeline.movingAverageWindowSize;
-			result.errorThreshold = config.pipeline.errorThreshold;
-			result.epsilon = config.pipeline.epsilon;
-
-			result.mergePrediction = (app.type == app.Type.RASTER && brushType == "vector");
-		}
+		result.mergePrediction = (app.type == app.Type.RASTER && brushType == "vector");
 
 		return result;
 	}

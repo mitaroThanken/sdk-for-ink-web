@@ -1,9 +1,0 @@
-{
-  "name": "dom-transformer",
-  "version": "1.0.0",
-  "description": "DOM manipulator & content frame",
-  "module": "dom-transformer-esm-min.js",
-  "unpkg": "dom-transformer-min.js",
-  "author": "Tzvetelin Vassilev",
-  "license": "ISC"
-}

@@ -10,8 +10,6 @@ let app = {
 			if (sample != 2) document.querySelector(".app").className += " vector";
 			if (sample != 1) document.querySelector(".app").className += " raster";
 
-			document.querySelector("#basic").style.display = (sample == 1) ? "" : "none";
-
 			document.querySelector(".title").innerText = sample + ". " + document.querySelector("#sample" + sample).innerHTML;
 			document.querySelector(".app").style.display = "";
 		}
