@@ -29,7 +29,9 @@ The SDK is free of charge and does not need a license.
 
 ## Using the WILL SDK Sample Code
 
-* copy the SDK ink engine folder *wacom-digital-ink* into the samples folder
+* copy these folders from the downloaded sdk to the samples folder
+    * *wacom-digital-ink*
+    * *wacom-dom-transformer*
 * start a command prompt in the samples folder
 * use the command ```npm install``` to create the node_modules folder
 
