@@ -1,4 +1,4 @@
-# SDK for ink - Web
+# WILL SDK for ink - Web
 
 ## Version 3.0.0
 
