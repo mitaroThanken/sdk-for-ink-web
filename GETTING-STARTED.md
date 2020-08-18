@@ -95,7 +95,7 @@ Figure 3 shows a canvas combining the raster and the vector rendering.
 
 The **Ink Designer** provides an easy way to configure the parameters of a brush tool and the related pipeline configuration.
 
-The [Ink Designer](http://will-docs.westeurope.cloudapp.azure.com/sdk-for-ink/docs/ink-designer) page provides a link to the tool with supporting documentation.
+The [Ink Designer](http://developer-docs.wacom.com/sdk-for-ink/docs/ink-designer) page provides a link to the tool with supporting documentation.
 
 Via its export function the tool can be downloaded and imported within the sample application. 
 
@@ -190,7 +190,7 @@ Using the draw method of the StrokeRenderer these sequences can be rendered as p
 ### Universal Ink Model
 
 To serialize and deserialize the InkDocument - the data model within memory - the InkCodec is used.
-`encodeInkDocument` encodes the `InkDocument` and produces a byte array encoding in the *.uim* file format described here: [Universal Ink Model](http://will-docs.westeurope.cloudapp.azure.com/sdk-for-ink/docs/model)
+`encodeInkDocument` encodes the `InkDocument` and produces a byte array encoding in the *.uim* file format described here: [Universal Ink Model](http://developer-docs.wacom.com/sdk-for-ink/docs/model)
 
 To decode the content of the *.uim* file `decodeInkDocument` is used to create an `InkDocument`. 
 
