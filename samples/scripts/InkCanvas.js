@@ -45,19 +45,29 @@ class InkCanvas extends InkController {
 		this.color = color;
 	}
 
-	registerTouches(changedTouches) {
-		if (this.forward) return this.inkCanvasRaster.registerTouches(changedTouches);
+	registerInputProvider(pointerID, isPrimary) {
+		if (this.forward) return this.inkCanvasRaster.registerInputProvider(pointerID, isPrimary);
 
-		// multi-touch should handle all changedTouches and to assign builders for each other
-		if (isNaN(this.builder.touchID))
-			this.builder.touchID = changedTouches.item(0).identifier;
+		if (Array.isArray(pointerID)) {
+			// multi-touch should handle all changedTouches and to assign builders for each other
+			if (isNaN(this.builder.pointerID))
+				this.builder.pointerID = pointerID.first;
+		}
+		else {
+			if (isPrimary)
+				this.builder.pointerID = pointerID;
+		}
 	}
 
-	getInkBuilder(changedTouches = []) {
+	getInkBuilder(pointerID) {
 		if (this.forward) return this.inkCanvasRaster.getInkBuilder(changedTouches);
 
-		if (changedTouches.length > 0 && !Array.from(changedTouches).map(touch => touch.identifier).includes(this.builder.touchID)) return undefined;
-		return this.builder;
+		if (Array.isArray(pointerID)) {
+			if (pointerID.length > 0 && !pointerID.includes(this.builder.pointerID)) return undefined;
+			return this.builder;
+		}
+		else
+			return (this.builder.pointerID == pointerID) ? this.builder : undefined;
 	}
 
 	reset(sensorPoint) {
@@ -130,7 +140,8 @@ class InkCanvas extends InkController {
 		this.strokeRenderer.draw(pathPart.added, pathPart.phase == InkBuilder.Phase.END);
 
 		if (pathPart.phase == InkBuilder.Phase.UPDATE) {
-			this.strokeRenderer.drawPreliminary(pathPart.predicted);
+			if (!["pencil", "inkBrush"].includes(this.toolID))
+				this.strokeRenderer.drawPreliminary(pathPart.predicted);
 
 			let dirtyArea = this.canvas.bounds.intersect(this.strokeRenderer.updatedArea);
 
@@ -254,7 +265,7 @@ class InkCanvas extends InkController {
 				}
 
 				this.strokeRenderer.draw(stroke);
-				this.strokeRenderer.blendStroke(this.strokesLayer);
+				this.strokeRenderer.blendStroke(this.strokesLayer, dirtyArea);
 			}
 		}
 

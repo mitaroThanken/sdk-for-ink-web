@@ -68,13 +68,18 @@ class SelectionVector extends Selection {
 		if (this.selection) {
 			this.splitArea = this.split();
 			// history.add();
+
+			if (this.strokes.length == 0)
+				this.close();
 		}
 
 		if (this.type == Selection.Type.PATH)
 			this.canvasTransformer.draw(this.strokes);
 
 		this.canvasBridge.redraw(this.splitArea || this.bounds, this.strokes);
-		this.canvasTransformer.show();
+
+		if (this.strokes.length > 0)
+			this.canvasTransformer.show();
 	}
 
 	transform() {

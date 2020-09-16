@@ -34,6 +34,8 @@ class DataModel {
 	}
 
 	transform(stroke, mat) {
+		mat = Matrix.fromMatrix(mat);
+
 		stroke.transform(mat);
 
 		this.manipulationsContext.reload(stroke);

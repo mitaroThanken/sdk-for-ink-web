@@ -125,6 +125,8 @@ class Selection {
 	}
 
 	onTransform(e) {
+		if (!this.active) return;
+
 		let lastTransformArea = this.lastTransformArea;
 
 		this.lastTransform = e.detail.transform;
