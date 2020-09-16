@@ -23,3 +23,15 @@
         }
     }
 })();
+
+(() => {
+	Array.from(
+		Array.from(document.querySelector("nav").querySelectorAll("h3"))
+			.filter(n => n.innerText == "Classes")[0]
+			.nextElementSibling
+			.querySelectorAll("a")
+	)
+		.filter(a => a.href.replace(".html", "").includes("."))
+		.map(a => a.parentNode)
+		.forEach(li => li.parentNode.removeChild(li));
+})();
