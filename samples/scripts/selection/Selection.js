@@ -46,9 +46,9 @@ class Selection {
 			]
 		});
 
-		this.frame.addEventListener("TransformStart", this.onTransformStart);
-		this.frame.addEventListener("Transform", this.onTransform);
-		this.frame.addEventListener("TransformEnd", this.onTransformEnd);
+		this.frame.addEventListener("transformstart", this.onTransformStart);
+		this.frame.addEventListener("transform", this.onTransform);
+		this.frame.addEventListener("transformend", this.onTransformEnd);
 
 		SelectionListener.add(this);
 
