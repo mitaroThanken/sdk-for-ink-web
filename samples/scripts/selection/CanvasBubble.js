@@ -1,5 +1,5 @@
 class CanvasBubble {
-	constructor(selector, width, height) {
+	constructor(selector, lens, width, height) {
 		this.surface = document.querySelector(selector);
 		this.ctx = this.surface.getContext("2d");
 
@@ -9,9 +9,7 @@ class CanvasBubble {
 		this.surface.addEventListener("contextmenu", (e) => document.querySelector(".vector-canvas").dispatchEvent(new MouseEvent(e.type, e)));
 
 		Object.defineProperty(this, "bounds", {get: () => new DOMRect(0, 0, this.surface.width, this.surface.height), enumerable: true});
-
-		this.transform = new DOMMatrix();
-		this.transform.multiplicationType = DOMMatrix.MultiplicationType.PRE;
+		Object.defineProperty(this, "transform", {get: () => lens.transform, enumerable: true});
 	}
 
 	show() {

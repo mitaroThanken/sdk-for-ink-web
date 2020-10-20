@@ -1,17 +1,16 @@
 class Selection {
-	constructor(options = {}) {
+	constructor(lens, options = {}) {
 		this.active = false;
 
 		this.frame = null;
 		this.frameSelector = null;
 
+		this.lens = lens;
+
 		this.delta = options.delta;
 		this.minWidth = options.minWidth || 80;
 		this.minHeight = options.minHeight || 80;
 		this.strokeWidth = options.strokeWidth || 1;
-
-		this.canvasTransform = new DOMMatrix();
-		this.canvasTransform.multiplicationType = DOMMatrix.MultiplicationType.PRE;
 
 		this.onTransformStart = this.onTransformStart.bind(this);
 		this.onTransform = this.onTransform.bind(this);
@@ -105,9 +104,12 @@ class Selection {
 				changeColor: {
 					name: "Change color",
 					visible: typeof this.changeStrokesColor == "function",
-					callback: () => {
+					callback: (key, opt, e) => {
 						let input = this.frame.querySelector("input[type=color]");
-						input.onchange = (e) => this.changeStrokesColor(Color.fromColor(e.target.value))
+						input.style.left = e.offsetX + "px";
+						input.style.top = e.offsetY + "px";
+
+						input.onchange = (e) => this.changeStrokesColor(Color.fromColor(e.target.value));
 						input.click();
 					}
 				},
@@ -119,7 +121,7 @@ class Selection {
 	onTransformStart(e) {
 		this.lastOrigin = e.detail.origin;
 
-		// this.frame.transform = this.canvasTransform;
+		// this.frame.transform = this.lens.transform;
 
 		this.beginTransform();
 	}
@@ -159,6 +161,22 @@ class Selection {
 		if (bounds.width < this.minWidth || bounds.height < this.minHeight)
 			bounds = new Rect(bounds.left, bounds.top, Math.max(this.minWidth, bounds.width), Math.max(this.minHeight, bounds.height));
 
+		if (!this.lens.transform.isIdentity) {
+			bounds = bounds.transform(this.lens.transform);
+
+			if (path) {
+				path = new InkPath2D(path.clone());
+
+				path.transform(this.lens.transform);
+				path = path.first;
+			}
+
+			if (state) {
+				state.origin = state.origin.transform(this.lens.transform);
+				state.transform = state.transform.multiply(this.lens.transform);
+			}
+		}
+
 		this.type = path ? Selection.Type.PATH : Selection.Type.RECT;
 		this.bounds = bounds;
 		this.path = path || Rect.fromRect(bounds).toPath().points;
@@ -193,10 +211,12 @@ class Selection {
 
 		this.frame.classList.add(`selection-${this.type}`);
 
-		this.transformer.open(this.bounds, translate, state);
-
 		this.active = true;
+
+		this.lens.disable();
 		InputListener.stop();
+
+		this.transformer.open(this.bounds, translate, state);
 	}
 
 	/**
@@ -226,16 +246,10 @@ class Selection {
 		this.hideFrame();
 
 		if (this.lastTransformArea)
-			this.completeTransform();
+			await this.completeTransform();
 
-		if (onClose) {
-			const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-
-			if (onClose instanceof AsyncFunction)
-				await onClose();
-			else
-				onClose();
-		}
+		if (onClose)
+			await onClose();
 
 		this.reset();
 	}
@@ -246,11 +260,9 @@ class Selection {
 		this.frame.classList.remove(`selection-${this.type}`);
 
 		this.active = false;
-		InputListener.start();
-	}
 
-	update(canvasTransform) {
-		this.canvasTransform = canvasTransform;
+		this.lens.enable();
+		InputListener.start();
 	}
 
 	cut() {

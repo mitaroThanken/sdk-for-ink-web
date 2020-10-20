@@ -1,6 +1,6 @@
 class CanvasTransformer extends CanvasBubble {
-	constructor(width, height) {
-		super(".layer-transforms", width, height);
+	constructor(lens, width, height) {
+		super(".layer-transforms", lens, width, height);
 
 		this.canvas = InkCanvas2D.createInstance(this.surface, width, height);
 		this.originLayer = this.canvas.createLayer();
@@ -24,7 +24,12 @@ class CanvasTransformer extends CanvasBubble {
 	}
 
 	refresh(transform) {
+		if (transform)
+			transform = this.transform.multiply(transform);
+		else
+			transform = this.transform;
+
 		this.canvas.clear();
-		this.canvas.blend(this.originLayer, {transform: transform});
+		this.canvas.blend(this.originLayer, {transform});
 	}
 }

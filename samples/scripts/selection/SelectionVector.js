@@ -1,11 +1,11 @@
 class SelectionVector extends Selection {
 	constructor(dataModel, canvasBridge, options) {
-		super(options);
+		super(canvasBridge.lens, options);
 
 		this.dataModel = dataModel;
 		this.canvasBridge = canvasBridge;
 
-		this.canvasTransformer = new CanvasTransformer(this.canvasBridge.canvas.width, this.canvasBridge.canvas.height);
+		this.canvasTransformer = new CanvasTransformer(canvasBridge.lens, canvasBridge.canvas.width, canvasBridge.canvas.height);
 		this.codec = new InkCodec();
 
 		this.strokes = [];
@@ -51,9 +51,7 @@ class SelectionVector extends Selection {
 		this.strokes = strokes.slice();
 
 		this.strokes.forEach(stroke => {
-			if (pos)
-				this.dataModel.add(stroke);
-
+			if (pos) this.dataModel.add(stroke);
 			bounds = stroke.bounds.union(bounds);
 		});
 
@@ -69,8 +67,7 @@ class SelectionVector extends Selection {
 			this.splitArea = this.split();
 			// history.add();
 
-			if (this.strokes.length == 0)
-				this.close();
+			if (this.strokes.length == 0) this.close();
 		}
 
 		if (this.type == Selection.Type.PATH)
@@ -85,11 +82,6 @@ class SelectionVector extends Selection {
 	transform() {
 		let dirtyArea = this.splitArea || this.dirtyArea;
 		delete this.splitArea;
-
-		// this.strokes.forEach(stroke => stroke.updateTransform(this.lastTransform));
-		// this.canvasBridge.redraw(dirtyArea);
-
-		// this.strokes.forEach(stroke => stroke.setTransform(this.lastTransform));
 
 		this.canvasTransformer.refresh(this.lastTransform);
 	}
@@ -108,14 +100,14 @@ class SelectionVector extends Selection {
 		this.strokes = selected;
 		delete this.selection;
 
-		return dirtyArea;
+		return dirtyArea.transform(this.lens.transform);
 	}
 
 	completeTransform() {
-		this.strokes.forEach(stroke => this.dataModel.transform(stroke, this.lastTransform));
+		let modelTransform = this.lens.transform.multiply(this.lastTransform).multiply(this.lens.transform.invert());
+		this.dataModel.transform(modelTransform, ...this.strokes);
 
-		let dirtyArea = this.bounds.transform(this.lastTransform);
-
+		let dirtyArea = this.bounds.transform(this.lastTransform).ceil();
 		this.canvasBridge.redraw(dirtyArea);
 	}
 
@@ -125,6 +117,9 @@ class SelectionVector extends Selection {
 		if (!this.lastTransformArea) {
 			this.beginTransform();
 			this.lastTransformArea = this.bounds.transform(this.lastTransform);
+
+			if (!this.lastTransform)
+				this.lastTransform = new Matrix();
 		}
 
 		this.strokes.forEach(stroke => (stroke.color = color));

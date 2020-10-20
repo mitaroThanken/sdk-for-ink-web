@@ -13,11 +13,11 @@ class DataModel {
 	update(intersected, selected = []) {
 		let split = this.manipulationsContext.update(intersected);
 
-		split.intersected.forEach(intersection => {
-			if (intersection.strokes.length == 0)
-				this.remove(intersection.stroke);
+		split.intersected.forEach(strokeSplit => {
+			if (strokeSplit.strokes.length == 0)
+				this.remove(strokeSplit.stroke);
 			else
-				this.inkModel.replacePath(intersection.stroke, intersection.strokes);
+				this.inkModel.replacePath(strokeSplit.stroke, strokeSplit.strokes);
 		});
 
 		let strokes = this.getStrokes(selected);
@@ -28,17 +28,14 @@ class DataModel {
 		return split;
 	}
 
-	replace(stroke, strokes, intervals, holes) {
-		this.inkModel.replacePath(stroke, strokes);
-		this.manipulationsContext.replace(stroke, strokes, intervals, holes);
-	}
-
-	transform(stroke, mat) {
+	transform(mat, ...strokes) {
 		mat = Matrix.fromMatrix(mat);
 
-		stroke.transform(mat);
+		strokes.forEach(stroke => {
+			stroke.transform(mat);
 
-		this.manipulationsContext.reload(stroke);
+			this.manipulationsContext.reload(stroke);
+		});
 	}
 
 	remove(...strokes) {
@@ -53,11 +50,13 @@ class DataModel {
 	}
 
 	importModel(inkModel) {
-		inkModel.brushes.forEach(brush => {
+		this.inkModel = inkModel || new InkModel();
+
+		this.inkModel.brushes.forEach(brush => {
 			this.repository.register(brush.name, brush);
 		});
 
-		inkModel.strokes.forEach(stroke => {
+		this.inkModel.strokes.forEach(stroke => {
 			this.manipulationsContext.add(stroke);
 		});
 	}
@@ -71,10 +70,7 @@ class DataModel {
 	}
 
 	reset(inkModel) {
-		this.inkModel = inkModel || new InkModel();
 		this.manipulationsContext.reset();
-
-		if (inkModel)
-			this.importModel(inkModel);
+		this.importModel(inkModel);
 	}
 }

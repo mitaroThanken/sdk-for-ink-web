@@ -28,10 +28,31 @@ let SelectionListener = {
 	attachCanvasContextMenu(selection) {
 		if (!selection.canvasSelector) return;
 
+		$(`.${selection.canvasSelector}`).on("mousedown", function(e) {
+			if (e.buttons != 2) return;
+
+			let show = WILL.transform.isIdentity || e.ctrlKey || e.metaKey;
+
+			if (show) {
+				$(`.${selection.canvasSelector}`).contextMenu({x: e.pageX, y: e.pageY});
+
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		});
+
 		$.contextMenu({
 			selector: `.${selection.canvasSelector}`,
+			trigger: "none",
 			build: ($trigger, e) => {
 				if (this.repository.filter(selection => selection.active).length > 0) return false;
+
+				if (isNaN(e.offsetX) || isNaN(e.offsetY)) {
+					let offset = $trigger.offset();
+
+					e.offsetX = e.pageX - offset.left;
+					e.offsetY = e.pageY - offset.top;
+				}
 
 				let pos = {x: e.offsetX, y: e.offsetY};
 				let selectionImage = this.repository.filter(selection => selection.constructor.name == "SelectionImage").first;

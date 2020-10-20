@@ -12,8 +12,8 @@
 	<script type="text/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
 
 	<link rel="stylesheet" href="/node_modules/jquery-contextmenu/dist/jquery.contextMenu.min.css">
-	<script src="/node_modules/jquery-contextmenu/dist/jquery.contextMenu.min.js"></script>
-	<script src="/node_modules/jquery-contextmenu/dist/jquery.ui.position.min.js"></script>
+	<script type="text/javascript" src="/node_modules/jquery-contextmenu/dist/jquery.contextMenu.min.js"></script>
+	<script type="text/javascript" src="/node_modules/jquery-contextmenu/dist/jquery.ui.position.min.js"></script>
 
 	<!-- wacom-digital-ink dependencies -->
 	<script type="text/javascript" src="/node_modules/clipper-lib/clipper.js"></script>
@@ -27,7 +27,7 @@
 
 	<!-- dom-transformer event -->
 	<link rel="stylesheet" type="text/css" href="/node_modules/dom-transformer/dom-transformer.css" />
-	<script src="/node_modules/dom-transformer/dom-transformer-min.js"></script>
+	<script type="text/javascript" src="/node_modules/dom-transformer/dom-transformer-min.js"></script>
 
 	<script type="text/javascript">
 		const {
@@ -38,7 +38,8 @@
 			Brush2D, BrushPrototype, ShapeFactory,
 			BrushGL, URIResolver,
 			Intersector, Selector,
-			PathPointContext, InkBuilder, Stroke,
+			PathPointContext, InkBuilder,
+			InkPath2D, Stroke,
 			InkModel, SpatialContext, InkCodec,
 			Color, Rect, Matrix, BlendMode,
 			InkCanvas2D, StrokeRenderer2D,
@@ -48,25 +49,26 @@
 		const {TransformEvent} = DOMTransformer;
 	</script>
 
-	<script src="./scripts/DataModel.js"></script>
-	<script src="./scripts/DataRepository.js"></script>
-	<script src="./scripts/URIBuilder.js"></script>
-	<script src="./scripts/BrushPalette.js"></script>
-	<script src="./scripts/ValueTransformer.js"></script>
-	<script src="./scripts/Config.js"></script>
+	<script type="text/javascript" src="./scripts/DataModel.js"></script>
+	<script type="text/javascript" src="./scripts/DataRepository.js"></script>
+	<script type="text/javascript" src="./scripts/URIBuilder.js"></script>
+	<script type="text/javascript" src="./scripts/BrushPalette.js"></script>
+	<script type="text/javascript" src="./scripts/ValueTransformer.js"></script>
+	<script type="text/javascript" src="./scripts/Config.js"></script>
 
-	<script src="./scripts/InkCanvas.js"></script>
-	<script src="./scripts/InkCanvasVector.js"></script>
-	<script src="./scripts/InkCanvasRaster.js"></script>
+	<script type="text/javascript" src="./scripts/Lens.js"></script>
+	<script type="text/javascript" src="./scripts/InkCanvas.js"></script>
+	<script type="text/javascript" src="./scripts/InkCanvasVector.js"></script>
+	<script type="text/javascript" src="./scripts/InkCanvasRaster.js"></script>
 
-	<script src="./scripts/selection/CanvasBubble.js"></script>
-	<script src="./scripts/selection/CanvasTransformer.js"></script>
+	<script type="text/javascript" src="./scripts/selection/CanvasBubble.js"></script>
+	<script type="text/javascript" src="./scripts/selection/CanvasTransformer.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="/styles/selection.css" />
 
-	<script src="./scripts/selection/Selection.js"></script>
-	<script src="./scripts/selection/SelectionVector.js"></script>
-	<script src="./scripts/selection/SelectionListener.js"></script>
+	<script type="text/javascript" src="./scripts/selection/Selection.js"></script>
+	<script type="text/javascript" src="./scripts/selection/SelectionVector.js"></script>
+	<script type="text/javascript" src="./scripts/selection/SelectionListener.js"></script>
 
 	<script type="text/javascript" src="/scripts/layout/DropDown.js"></script>
 	<script type="text/javascript" src="/scripts/layout/Layout.js"></script>

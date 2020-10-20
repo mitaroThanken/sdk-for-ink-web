@@ -6,5 +6,7 @@ class InkCanvasRaster extends InkCanvas {
 		this.strokesLayer = this.canvas.createLayer();
 
 		this.strokeRenderer = new StrokeRendererGL(this.canvas);
+
+		this.transform = new Matrix();
 	}
 }

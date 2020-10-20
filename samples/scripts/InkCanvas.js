@@ -156,8 +156,6 @@ class InkCanvas extends InkController {
 			let dirtyArea = this.canvas.bounds.intersect(this.strokeRenderer.strokeBounds.union(this.strokeRenderer.updatedArea));
 
 			if (dirtyArea) {
-				dirtyArea = dirtyArea.ceil();
-
 				if (!this.selector && !this.intersector) {
 					if (app.type == app.Type.VECTOR) {
 						let size = config.getSize(this.toolID);
@@ -167,9 +165,7 @@ class InkCanvas extends InkController {
 					}
 
 					this.strokeRenderer.blendStroke(this.strokesLayer);
-
-					this.canvas.clear(dirtyArea);
-					this.canvas.blend(this.strokesLayer, {rect: dirtyArea});
+					this.refresh(dirtyArea);
 				}
 			}
 		}
@@ -198,8 +194,10 @@ class InkCanvas extends InkController {
 		let split = this.dataModel.update(intersection.intersected, intersection.selected);
 		let dirtyArea = split.dirtyArea;
 
-		if (dirtyArea)
+		if (dirtyArea) {
+			dirtyArea.model = true;
 			this.redraw(dirtyArea);
+		}
 	}
 
 	select(pathPart) {
@@ -251,26 +249,33 @@ class InkCanvas extends InkController {
 	}
 
 	redraw(dirtyArea = this.canvas.bounds, excludedStrokes = []) {
-		this.strokesLayer.clear(dirtyArea);
+		let modelArea = dirtyArea;
+		let viewArea = dirtyArea;
+
+		if (this.lens) {
+			modelArea = dirtyArea.model ? dirtyArea : this.lens.viewToModel(dirtyArea);
+			viewArea = dirtyArea.model ? this.lens.modelToView(dirtyArea) : dirtyArea;
+		}
+
+		this.strokesLayer.clear(viewArea);
 
 		for (let stroke of this.strokes) {
 			if (excludedStrokes.includes(stroke)) continue;
 
-			if (stroke.bounds.intersect(dirtyArea)) {
+			if (stroke.bounds.intersect(modelArea)) {
 				if (this.strokeRenderer instanceof StrokeRenderer2D && stroke.brush instanceof BrushGL) {
 					this.inkCanvasRaster.strokeRenderer.draw(stroke);
-					this.inkCanvasRaster.strokeRenderer.blendStroke(this.strokesLayer, dirtyArea);
+					this.inkCanvasRaster.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
 
 					continue;
 				}
 
 				this.strokeRenderer.draw(stroke);
-				this.strokeRenderer.blendStroke(this.strokesLayer, dirtyArea);
+				this.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
 			}
 		}
 
-		this.canvas.clear(dirtyArea);
-		this.canvas.blend(this.strokesLayer, {rect: dirtyArea});
+		this.refresh(viewArea);
 	}
 
 	refresh(dirtyArea = this.canvas.bounds) {
@@ -283,6 +288,7 @@ class InkCanvas extends InkController {
 		this.canvas.clear();
 
 		this.dataModel.reset();
+		if (this.lens) this.lens.reset();
 	}
 
 	import(input, type) {
@@ -301,9 +307,10 @@ class InkCanvas extends InkController {
 	}
 
 	async importTool(buffer) {
-    // Decode serialised brush configuration
+		// Decode serialised tool configuration
 		let data = this.codec.decodeTool(buffer);
 		let error;
+
 		// Check if the brush is either a vector or particle brush
 		if (localStorage.getItem("sample") == 1 && data.brush instanceof BrushGL)
 			error = "Tool data provides raster configuration. Select sample different from this one to use it.";
@@ -364,42 +371,15 @@ class InkCanvas extends InkController {
 		}
 
 		this.clear();
-		this.dataModel.reset(inkModel);
-
-		let fileStrokeRenderer = new this.strokeRenderer.constructor(this.canvas);
-		let brushes = {};
 
 		for (let brush of inkModel.brushes) {
-			brushes[brush.name] = brush;
-
 			if (brush instanceof BrushGL) {
 				let canvas = this.inkCanvasRaster ? this.inkCanvasRaster.canvas : this.canvas;
 				await brush.configure(canvas.ctx);
 			}
 		}
 
-		let brush;
-		let dirtyArea;
-		let strokeRenderer;
-
-		for (let stroke of inkModel.strokes) {
-			brush = brushes[stroke.brush.name];
-
-			if (brush instanceof BrushGL && this.inkCanvasRaster)
-				strokeRenderer = this.inkCanvasRaster.strokeRenderer;
-			else
-				strokeRenderer = fileStrokeRenderer;
-
-			strokeRenderer.configure({brush: brush, color: stroke.color});
-
-			strokeRenderer.draw(stroke);
-			strokeRenderer.blendStroke(this.strokesLayer);
-
-			if (strokeRenderer.strokeBounds)
-				dirtyArea = strokeRenderer.strokeBounds.union(dirtyArea);
-		}
-
-		this.canvas.clear(dirtyArea);
-		this.canvas.blend(this.strokesLayer, {rect: dirtyArea});
+		this.dataModel.importModel(inkModel);
+		this.redraw();
 	}
 }

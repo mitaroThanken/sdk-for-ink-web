@@ -8,15 +8,20 @@ class InkCanvasVector extends InkCanvas {
 
 		this.strokeRenderer = new StrokeRenderer2D(this.canvas);
 
-		this.canvasTransformer = new CanvasTransformer(width, height);
+		this.lens = new Lens(this.canvas, transform => {
+			this.strokeRenderer.setTransform(transform);
+			this.redraw();
+		});
 
 		this.selection = new SelectionVector(this.dataModel, {
+			lens: this.lens,
 			canvas: this.canvas,
-			canvasTransformer: this.canvasTransformer,
 			redraw: this.redraw.bind(this)
 		});
 
 		this.selection.connect();
+
+		Object.defineProperty(this, "transform", {get: () => this.lens.transform, set: value => (this.lens.transform = value), enumerable: true});
 	}
 
 	streamUpdatedArea(data, updatedArea, complete) {

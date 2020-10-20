@@ -7,7 +7,8 @@
 	-ms-user-select: none;
 	user-select: none;
 }
-.selection input {display: none;}
+.selection input[type=file] {display: none;}
+.selection input[type=color] {position: absolute; visibility: hidden;}
 
 .selection.selection-path {border: 1px solid #C1C1C1;}
 
