@@ -1,5 +1,13 @@
 # dom-transformer ChangeLog
 
+## 1.0.2
+
+_2020-11-01_
+
+### Updates
+
+- pinch event expose center property (position of point on attached element)
+
 ## 1.0.1
 
 _2020-10-01_
