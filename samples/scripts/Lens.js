@@ -3,8 +3,9 @@ const MIN_SCALE_FACTOR = ENDLESS_CANVAS ? 0.2 : 1;
 const MAX_SCALE_FACTOR = 4;
 
 class Lens {
-	constructor(canvas, refresh) {
+	constructor(canvas, refresh, abort) {
 		this.canvas = canvas;
+		this.abort = abort;
 
 		let matrix = new Matrix();
 
@@ -45,6 +46,18 @@ class Lens {
 		this.onPanEnd = function onPanEnd(e) {
 			lastPoint = null;
 		}.bind(this);
+
+		let pincher = PinchEvent.register(this.canvas.surface);
+		pincher.reset(new Point(0, 0));
+
+		this.onPinchStart = function onPinchStart(e) {
+			this.abort();
+		}.bind(this);
+
+		this.onPinch = function onPinch(e) {
+			this.zoom(e.detail.pin, e.detail.scale);
+			this.pan(e.detail.translation);
+		}.bind(this);
 	}
 
 	enable() {
@@ -53,6 +66,9 @@ class Lens {
 		this.canvas.surface.addEventListener("mousedown", this.onPanStart);
 		this.canvas.surface.addEventListener("mousemove", this.onPan);
 		this.canvas.surface.addEventListener("mouseup", this.onPanEnd);
+
+		this.canvas.surface.addEventListener("pinchstart", this.onPinchStart);
+		this.canvas.surface.addEventListener("pinch", this.onPinch);
 	}
 
 	disable() {
@@ -61,11 +77,14 @@ class Lens {
 		this.canvas.surface.removeEventListener("mousedown", this.onPanStart);
 		this.canvas.surface.removeEventListener("mousemove", this.onPan);
 		this.canvas.surface.removeEventListener("mouseup", this.onPanEnd);
+
+		this.canvas.surface.removeEventListener("pinchstart", this.onPinchStart);
+		this.canvas.surface.removeEventListener("pinch", this.onPinch);
 	}
 
-	zoom(e) {
-		let pos = {x: e.offsetX, y: e.offsetY};
-		let factor = (e.deltaY > 0) ? 0.97 : 1.03;
+	zoom(e, scaleFactor) {
+		let pos = scaleFactor ? e : {x: e.offsetX, y: e.offsetY};
+		let factor = scaleFactor ? scaleFactor : (e.deltaY > 0) ? 0.97 : 1.03;
 
 		if (this.transform.a * factor < MIN_SCALE_FACTOR)
 			factor = MIN_SCALE_FACTOR / this.transform.a;
