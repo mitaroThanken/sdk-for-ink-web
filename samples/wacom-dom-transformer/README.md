@@ -56,12 +56,11 @@ DOMNode.addEventListener("pinchend", Function);
 
 ### PinchEvent output (event.detail)
 
-| name        | type        | description                                                           |
-| ----------- | ----------- | --------------------------------------------------------------------- |
-| pin         | DOMPoint    | Point of interest - where pinch comes from (continious pinch)         |
-| center      | DOMPoint    | Vector center - position on attached element (pin for one step pinch) |
-| origin      | DOMPoint    | Transformation origin - where pinch starts from                       |
-| scale       | Scale       | Scale delta                                                           |
-| rotation    | float       | Rotation delta angle in rad                                           |
-| translation | Translation | Translation delta                                                     |
-| transform   | DOMMatrix   | Transform delta. Matrix based on all underlying properties.           |
+| name        | type        | description                                                 |
+| ----------- | ----------- | ----------------------------------------------------------- |
+| pin         | DOMPoint    | Point of interest - where pinch comes from                  |
+| origin      | DOMPoint    | Transformation origin - where pinch starts from             |
+| scale       | Scale       | Scale delta                                                 |
+| rotation    | float       | Rotation delta angle in rad                                 |
+| translation | Translation | Translation delta                                           |
+| transform   | DOMMatrix   | Transform delta. Matrix based on all underlying properties. |

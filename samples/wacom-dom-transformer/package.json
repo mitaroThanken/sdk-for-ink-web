@@ -1,7 +1,7 @@
 {
   "name": "dom-transformer",
   "productName": "DOM Transformer",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "DOM manipulator & content frame",
   "module": "dom-transformer-min.js",
   "unpkg": "dom-transformer-min.js",
