@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: 2D</title>
+    <title>JSDoc: Tutorial: Webpack Configuration Manual</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,286 +17,119 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: 2D</h1>
+    <h1 class="page-title">Tutorial: Webpack Configuration Manual</h1>
 
-    
-
-
-
-
-<section>
+    <section>
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="Rasterization.html">Rasterization</a>.</span>2D</h2>
-        
-    
+
+    <h2>Webpack Configuration Manual</h2>
 </header>
 
 <article>
-    <div class="container-overview">
-    
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Rasterization.2D.Brush2D.html">Brush2D</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Rasterization.2D.BrushPrototype.html">BrushPrototype</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Rasterization.2D.InkCanvas2D.html">InkCanvas2D</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Rasterization.2D.OffscreenLayer2D.html">OffscreenLayer2D</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Rasterization.2D.ShapeFactory.html">ShapeFactory</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Rasterization.2D.StrokeRenderer2D.html">StrokeRenderer2D</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id=".ContextAttributes2D">ContextAttributes2D</h4>
-
-
-
-
-<div class="description">
-    <p>Defines 2D context attributes</p>
-</div>
-
-
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>alpha</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last"><p>Boolean that indicates if the canvas contains an alpha channel. If set to false, the browser now knows that the backdrop is always opaque, which can speed up drawing of transparent content and images.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>desynchronized</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>Boolean that hints the user agent to reduce the latency by desynchronizing the canvas paint cycle from the event loop.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-    
-
-    
+    <h3><strong>Overview</strong></h3>
+<hr>
+<p>Bundeling with webpack requires some additional configuration for proper bundeling integration of digital-ink dependency with third party technologies.
+<strong>analyze</strong> script tag provides analyses about bundle structure. Properly integrated <strong>digital-ink</strong> package should not contains any of externals as a part from bundeling structure.</p>
+<h3><strong>With React</strong></h3>
+<hr>
+<p>This configuration targets <strong>create-react-app</strong> and <strong>react-scripts</strong>. Requires <strong>react-app-rewired</strong> plugin.</p>
+<pre class="prettyprint source"><code>/* config-overrides.js */
+const rewireProvidePlugin = require('react-app-rewire-provide-plugin');
+const rewireDefinePlugin = require('@yeutech-lab/react-app-rewire-define-plugin');
+
+module.exports = function override(config, env) {​​​​​​​​
+	if (!config.eternals) {​​​​​​
+		config.externals = [];
+	}​​
+
+	if (!config.plugins) {​​​​​​​​
+		config.plugins = [];
+	}​​​​​​​
+
+	config.externals = [...config.externals, 'bindings', 'canvas', 'gl', 'systeminformation'];
+
+	config = rewireProvidePlugin(config, env, {​​​​​​​​
+		// expose some of public dependencies - these ones which do not provides ECMA 6 exports
+		ClipperLib: 'clipper-lib',
+		poly2tri: 'poly2tri',
+		protobuf: 'protobufjs',
+		Long: 'long',
+		md5: 'js-md5'
+	}​​​​​​​​);
+
+	config = rewireDefinePlugin(config, env, {​​​​​​​​
+		DIGITAL_INK_ENV:'&quot;BROWSER&quot;'
+	}​​​​​​​​);
+
+	return config;
+}​​​​​​​​
+</code></pre>
+<p><strong>react-app-rewired</strong> plugin requires some changes in <strong>package.json</strong> scripts section:</p>
+<pre class="prettyprint source"><code>&quot;scripts&quot;: {​​​​​​​​
+	&quot;analyze&quot;: &quot;source-map-explorer 'build/static/js/*.js'&quot;,
+	&quot;start&quot;: &quot;react-app-rewired start -host 0.0.0.0&quot;,
+	&quot;build&quot;: &quot;react-app-rewired build&quot;,
+	&quot;test&quot;: &quot;react-scripts test&quot;,
+	&quot;eject&quot;: &quot;react-scripts eject&quot;
+}​​​​​​​​
+</code></pre>
+<h3><strong>With Nuxt</strong></h3>
+<hr>
+<pre class="prettyprint source"><code>/* nuxt.config.js */
+import webpack from 'webpack'
+
+export default {
+	...,
+
+	// Build configuration
+	build: {
+		extend(config, ctx) {
+			if (ctx.isDev && ctx.isClient) {
+				...
+
+				config.externals = ['bindings', 'canvas', 'gl', 'systeminformation']
+
+				// exclude commonjs dependencies
+				config.node = {
+					fs: &quot;empty&quot;,
+					net: &quot;empty&quot;,
+					child_process: &quot;empty&quot;
+				}
+			}
+		},
+		plugins: [
+			new webpack.ProvidePlugin({
+				...
+
+				// expose some of public dependencies - these ones which do not provides ECMA 6 exports
+				ClipperLib: 'clipper-lib',
+				poly2tri: 'poly2tri',
+				protobuf: 'protobufjs',
+				Long: 'long',
+				md5: 'js-md5'
+			}),
+
+			new webpack.DefinePlugin({
+				DIGITAL_INK_ENV: '&quot;BROWSER&quot;'
+			})
+		]
+	}
+}
+</code></pre>
+<p><strong>package.json</strong> scripts section:</p>
+<pre class="prettyprint source"><code>&quot;scripts&quot;: {
+	&quot;analyze&quot;: &quot;nuxt build --analyze&quot;,
+	&quot;build&quot;: &quot;nuxt build&quot;,
+	&quot;dev&quot;: &quot;nuxt --hostname 0.0.0.0&quot;,
+	&quot;start&quot;: &quot;nuxt start --hostname 0.0.0.0&quot;,
+	&quot;generate&quot;: &quot;nuxt generate&quot;
+}
+</code></pre>
 </article>
 
 </section>
-
-
-
 
 </div>
 
