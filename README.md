@@ -115,13 +115,13 @@ The WILL technology is designed to be a platform-independent inking engine, prov
 
 ---
 
-# Additional resources 
+# Additional resources
 
 ## Sample Code
 For further samples check Wacom's Developer additional samples, see [https://github.com/Wacom-Developer](https://github.com/Wacom-Developer)
 
 ## Documentation
-For further details on using the SDK see [WILL SDK for ink documentation](http://developer-docs.wacom.com/sdk-for-ink/) 
+For further details on using the SDK see [WILL SDK for ink documentation](http://developer-docs.wacom.com/sdk-for-ink/)
 
 The API Reference is available directly in the downloaded SDK.
 
@@ -130,13 +130,13 @@ If you experience issues with the technology components, please see related [FAQ
 
 For further support file a ticket in our **Developer Support Portal** described here: [Request Support](http://developer-docs.wacom.com/faqs/docs/q-support/support)
 
-## Developer Community 
+## Developer Community
 Join our developer community:
 
 - [LinkedIn - Wacom for Developers](https://www.linkedin.com/company/wacom-for-developers/)
 - [Twitter - Wacom for Developers](https://twitter.com/Wacomdevelopers)
 
-## License 
+## License
 This sample code is licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
 
 ---
