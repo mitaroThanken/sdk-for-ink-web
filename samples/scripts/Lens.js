@@ -1,4 +1,4 @@
-const ENDLESS_CANVAS = false;
+const ENDLESS_CANVAS = location.search.includes("endless");
 const MIN_SCALE_FACTOR = ENDLESS_CANVAS ? 0.2 : 1;
 const MAX_SCALE_FACTOR = 4;
 

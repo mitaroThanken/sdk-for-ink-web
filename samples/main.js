@@ -1,5 +1,8 @@
 app.disbaleZoom();
 
+document.querySelector(":root").style.setProperty("--view-height", window.innerHeight + "px");
+window.addEventListener("resize", () => document.querySelector(":root").style.setProperty("--view-height", window.innerHeight + "px"));
+
 addEventListener("DOMContentLoaded", async (event) => {
 	let pkg = await fsx.loadFile("/package.json", "json")
 

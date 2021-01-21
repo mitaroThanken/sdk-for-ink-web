@@ -9,51 +9,23 @@ let config = {
 			dynamics: {
 				size: {
 					value: {
-						min: 0.5,
-						max: 1.6
-
-						// remap: v => ValueTransformer.sigmoid(v, 0.62)
+						min: 1,
+						max: 3.2
 					},
 
 					velocity: {
 						min: 5,
 						max: 210,
 
-						remap: v => ValueTransformer.reverse(v)
+						remap: v => ValueTransformer.sigmoid(v, 0.62, true)
+						// remap: "will://generic/action-remap/Sigmoid?p=0.62&reverse=true"
+					},
+
+					pressure: {
+						min: 0.19,
+						max: 0.88
 					}
 				}
-/*
-				rotation: {
-					dependencies: [SensorChannel.Type.ROTATION, SensorChannel.Type.AZIMUTH]
-				},
-
-				scaleX: {
-					dependencies: [SensorChannel.Type.RADIUS_X, SensorChannel.Type.ALTITUDE],
-
-					value: {
-						min: 1,
-						max: 3
-					}
-				},
-
-				scaleY: {
-					dependencies: [SensorChannel.Type.RADIUS_Y],
-
-					value: {
-						min: 1,
-						max: 3
-					}
-				},
-
-				offsetX: {
-					dependencies: [SensorChannel.Type.ALTITUDE],
-
-					value: {
-						min: 2,
-						max: 5
-					}
-				}
-*/
 			}
 		},
 
@@ -75,38 +47,6 @@ let config = {
 						remap: v => ValueTransformer.reverse(v)
 					}
 				}
-/*
-				rotation: {
-					dependencies: [SensorChannel.Type.ROTATION, SensorChannel.Type.AZIMUTH]
-				},
-
-				scaleX: {
-					dependencies: [SensorChannel.Type.RADIUS_X, SensorChannel.Type.ALTITUDE],
-
-					value: {
-						min: 1,
-						max: 3
-					}
-				},
-
-				scaleY: {
-					dependencies: [SensorChannel.Type.RADIUS_Y],
-
-					value: {
-						min: 1,
-						max: 3
-					}
-				},
-
-				offsetX: {
-					dependencies: [SensorChannel.Type.ALTITUDE],
-
-					value: {
-						min: 2,
-						max: 5
-					}
-				}
-*/
 			}
 		},
 
@@ -171,6 +111,36 @@ let config = {
 			statics: {
 				size: 3.4,
 				alpha: 0.7
+			}
+		},
+
+		basic: {
+			brush: BrushPalette.circle,
+
+			dynamics: {
+				size: {
+					value: {
+						min: 1,
+						max: 3.2
+					},
+
+					velocity: {
+						min: 100,
+						max: 4000
+					},
+
+					pressure: {
+						min: 0.2,
+						max: 0.8
+					}
+				}
+			},
+
+			statics: {},
+
+			pipeline: {
+				excludedPipelineStages: [PipelineStage.SMOOTHER, PipelineStage.POLYGON_MERGER, PipelineStage.POLYGON_SIMPLIFIER],
+				lastPipelineStage: PipelineStage.CONVEX_HULL_CHAIN_PRODUCER,
 			}
 		},
 
@@ -657,20 +627,14 @@ let config = {
 				layout: context.layout,
 				pathPointCalculator: context.calculate.bind(context),
 				pathPointProps: context.statics
-			}, config.getPipelineOptions(toolConfig.brush))
+			}, config.getPipelineOptions(toolConfig))
 		};
 	},
 
-	getPipelineOptions(brush) {
-		let result = {};
-		let brushType = (brush instanceof BrushGL) ? "raster" : "vector";
+	getPipelineOptions(toolConfig) {
+		let options = Object.assign({}, config.pipeline, toolConfig.pipeline);
+		options.mergePrediction = (app.type == app.Type.RASTER && toolConfig.brush instanceof Brush2D);
 
-		result.movingAverageWindowSize = config.pipeline.movingAverageWindowSize;
-		result.errorThreshold = config.pipeline.errorThreshold;
-		result.epsilon = config.pipeline.epsilon;
-
-		result.mergePrediction = (app.type == app.Type.RASTER && brushType == "vector");
-
-		return result;
+		return options;
 	}
 };

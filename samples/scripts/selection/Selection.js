@@ -143,9 +143,9 @@ class Selection {
 	disconnect() {
 		if (!this.frame || !this.frame.mounted) return;
 
-		this.frame.removeEventListener("TransformStart", this.onTransformStart);
-		this.frame.removeEventListener("Transform", this.onTransform);
-		this.frame.removeEventListener("TransformEnd", this.onTransformEnd);
+		this.frame.removeEventListener("transformstart", this.onTransformStart);
+		this.frame.removeEventListener("transform", this.onTransform);
+		this.frame.removeEventListener("transformend", this.onTransformEnd);
 
 		TransformEvent.unregister(this.frame);
 

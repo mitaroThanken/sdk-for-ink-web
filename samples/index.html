@@ -6,7 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>WILL 3 - Rendering, Manipulations and Serialization (Universal Ink Model) Demo</title>
 
-	<link rel="stylesheet" type="text/css" href="/styles/styles.css" />
+	<link rel="stylesheet" type="text/css" href="/styles/styles.css" title="main" />
 	<link rel="stylesheet" type="text/css" href="/styles/navigation.css" />
 
 	<script type="text/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
@@ -18,12 +18,16 @@
 	<!-- wacom-digital-ink dependencies -->
 	<script type="text/javascript" src="/node_modules/clipper-lib/clipper.js"></script>
 	<script type="text/javascript" src="/node_modules/js-md5/build/md5.min.js"></script>
-	<script type="text/javascript" src="/node_modules/poly2tri/dist/poly2tri.js"></script>
+	<script type="text/javascript" src="/node_modules/poly2tri/dist/poly2tri.min.js"></script>
 	<script type="text/javascript" src="/node_modules/long/dist/long.js"></script>
-	<script type="text/javascript" src="/node_modules/protobufjs/dist/protobuf.js"></script>
+	<script type="text/javascript" src="/node_modules/protobufjs/dist/protobuf.min.js"></script>
+	<script type="text/javascript" src="/node_modules/gl-matrix/gl-matrix-min.js"></script>
+	<script type="text/javascript" src="/node_modules/rbush/rbush.min.js"></script>
+
+	<script type="text/javascript" src="/node_modules/js-ext/js-ext-min.js"></script>
 
 	<!-- wacom-digital-ink engine -->
-	<script src="/node_modules/digital-ink/wacom-digital-ink-min.js"></script>
+	<script src="/node_modules/digital-ink/digital-ink-min.js"></script>
 
 	<!-- dom-transformer event -->
 	<link rel="stylesheet" type="text/css" href="/node_modules/dom-transformer/dom-transformer.css" />
@@ -41,7 +45,8 @@
 			PathPointContext, InkBuilder,
 			InkPath2D, Stroke,
 			InkModel, SpatialContext, InkCodec,
-			Color, Rect, Point, Matrix, BlendMode,
+			Color, Rect, Point, Matrix,
+			PipelineStage, BlendMode,
 			InkCanvas2D, StrokeRenderer2D,
 			InkCanvasGL, StrokeRendererGL
 		} = DigitalInk;
@@ -119,6 +124,8 @@
 					<img id="felt" src="/images/btn_tools/btn_feather.png" title="Felt" class="Tool" alt="" />
 					<img id="brush" src="/images/btn_tools/btn_brush.png" title="Brush" class="Tool" alt="" />
 					<img id="marker" src="/images/btn_tools/btn_marker.png" title="Marker" class="Tool" alt="" />
+
+					<img id="basic" name="basic" src="/images/btn_tools/btn_basic_brush.png" title="Basic2" class="Tool DelimiterLeft" alt="" />
 				</span>
 
 				<span class="RasterPart">

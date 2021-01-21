@@ -31,6 +31,20 @@ let layout = {
 		WILL.setColor(color);
 	},
 
+	selectPaper: function(paper) {
+		let sheet = Array.from(document.styleSheets).filter(sheet => sheet.title == "main").first;
+		let rule = Array.from(sheet.rules).filter(rule => rule.selectorText == ".Wrapper::before").first;
+
+		rule.style.backgroundImage = `url('/images/papers/${paper}')`;
+	},
+
+	updatePaper(transform) {
+		let sheet = Array.from(document.styleSheets).filter(sheet => sheet.title == "main").first;
+		let rule = Array.from(sheet.rules).filter(rule => rule.selectorText == ".Wrapper::before").first;
+
+		rule.style.transform = transform.toString();
+	},
+
 	extractColor(node, opacity) {
 		let rgba = [];
 

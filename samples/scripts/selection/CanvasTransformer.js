@@ -17,7 +17,8 @@ class CanvasTransformer extends CanvasBubble {
 			this.strokeRenderer.draw(stroke);
 			this.strokeRenderer.blendStroke(this.originLayer);
 
-			dirtyArea = this.strokeRenderer.strokeBounds.union(dirtyArea);
+			if (this.strokeRenderer.strokeBounds)
+				dirtyArea = this.strokeRenderer.strokeBounds.union(dirtyArea);
 		});
 
 		this.canvas.blend(this.originLayer, {mode: BlendMode.COPY, rect: dirtyArea});

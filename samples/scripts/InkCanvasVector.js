@@ -11,6 +11,8 @@ class InkCanvasVector extends InkCanvas {
 		this.lens = new Lens(this.canvas, transform => {
 			this.strokeRenderer.setTransform(transform);
 			this.redraw();
+
+			layout.updatePaper(transform);
 		}, this.abort.bind(this));
 
 		this.selection = new SelectionVector(this.dataModel, {

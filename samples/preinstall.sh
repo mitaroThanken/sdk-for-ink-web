@@ -5,7 +5,7 @@ GREEN='\033[0;32m'
 END='\033[0m'
 
 echo -e ${RED}Make sure you have downloaded WILL SDK from here:${END} https://developer.wacom.com/en-us/developer-dashboard/downloads
-echo -e ${RED}Make sure you have extracted SDK content under root app folder under${END} ${GREEN}wacom-digital-ink${END} ${RED}folder${END}
+echo -e ${RED}Make sure you have extracted SDK content under root app folder under${END} ${GREEN}wacom/digital-ink${END} ${RED}folder${END}
 echo
 echo WILL SDK for ink - Web
 echo

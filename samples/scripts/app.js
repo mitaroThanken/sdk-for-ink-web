@@ -90,4 +90,4 @@ let app = {
 	}
 };
 
-Function.createEnum.call(app, "Type", ["VECTOR", "RASTER"]);
+Object.defineEnum(app, "Type", ["VECTOR", "RASTER"]);

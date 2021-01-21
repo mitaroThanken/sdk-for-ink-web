@@ -4,14 +4,14 @@ class InkCanvas extends InkController {
 
 		this.builder = new InkBuilder();
 
-		this.builder.configure({onBuildComplete: (pathPart) => {
+		this.builder.onComplete = (pathPart) => {
 			if (this.intersector)
 				this.erase(pathPart);
 			else if (this.selector)
 				this.select(pathPart);
 			else
 				this.draw(pathPart);
-		}});
+		};
 
 		this.dataModel = app.model;
 		Object.defineProperty(this, "strokes", {get: () => this.dataModel.inkModel.content, enumerable: true});
@@ -256,6 +256,8 @@ class InkCanvas extends InkController {
 			modelArea = dirtyArea.model ? dirtyArea : this.lens.viewToModel(dirtyArea);
 			viewArea = dirtyArea.model ? this.lens.modelToView(dirtyArea) : dirtyArea;
 		}
+
+		viewArea = viewArea.intersect(this.canvas.bounds);
 
 		this.strokesLayer.clear(viewArea);
 

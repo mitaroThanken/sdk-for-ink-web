@@ -38,9 +38,7 @@ let dropDown = {
 		this.click(item);
 		$("nav .Paper")[0].src = item.src;
 
-		document.querySelector(".Wrapper").style.backgroundImage = `url('/images/papers/paper_${item.src.split("_").last}')`;
-		document.querySelector(".Wrapper").style.backgroundRepeat = "";
-
+		layout.selectPaper(`paper_${item.src.split("_").last}`);
 		this.hide("Papers");
 	}
 };
