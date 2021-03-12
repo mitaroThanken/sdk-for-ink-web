@@ -3,9 +3,9 @@ const MIN_SCALE_FACTOR = ENDLESS_CANVAS ? 0.2 : 1;
 const MAX_SCALE_FACTOR = 4;
 
 class Lens {
-	constructor(canvas, refresh, abort) {
+	constructor(canvas, canvasBridge) {
 		this.canvas = canvas;
-		this.abort = abort;
+		this.abort = canvasBridge.abort;
 
 		let matrix = new Matrix();
 
@@ -16,7 +16,8 @@ class Lens {
 			set: function(value) {
 				matrix = value;
 
-				refresh(value);
+				canvasBridge.refresh(value);
+				canvasBridge.redraw(value);
 			},
 			enumerable: true
 		});

@@ -131,7 +131,9 @@ class InkCanvas extends InkController {
 		if (pathPart.phase == InkBuilder.Phase.END) {
 			if (this.strokeRenderer) {
 				let stroke = this.strokeRenderer.toStroke(this.builder);
-				this.dataModel.add(stroke)
+				this.dataModel.add(stroke);
+
+				this.drawOrigin(stroke);
 			}
 		}
 	}
@@ -260,6 +262,7 @@ class InkCanvas extends InkController {
 		viewArea = viewArea.intersect(this.canvas.bounds);
 
 		this.strokesLayer.clear(viewArea);
+		this.clearOrigin(modelArea);
 
 		for (let stroke of this.strokes) {
 			if (excludedStrokes.includes(stroke)) continue;
@@ -274,10 +277,29 @@ class InkCanvas extends InkController {
 
 				this.strokeRenderer.draw(stroke);
 				this.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
+
+				this.drawOrigin(stroke, viewArea);
 			}
 		}
 
 		this.refresh(viewArea);
+	}
+
+	clearOrigin(modelArea) {
+		if (app.type == app.Type.RASTER || this.preventOriginRedraw) return;
+
+		this.originLayer.clear(modelArea);
+	}
+
+	drawOrigin(stroke, viewArea) {
+		if (app.type == app.Type.RASTER || this.preventOriginRedraw) return;
+
+		this.strokeRenderer.setTransform();
+
+		this.strokeRenderer.draw(stroke);
+		this.strokeRenderer.blendStroke(this.originLayer, viewArea);
+
+		this.strokeRenderer.setTransform(this.transform);
 	}
 
 	refresh(dirtyArea = this.canvas.bounds) {
@@ -286,6 +308,7 @@ class InkCanvas extends InkController {
 	}
 
 	clear() {
+		this.clearOrigin();
 		this.strokesLayer.clear();
 		this.canvas.clear();
 

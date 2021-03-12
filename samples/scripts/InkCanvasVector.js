@@ -4,16 +4,28 @@ class InkCanvasVector extends InkCanvas {
 
 		this.canvas = InkCanvas2D.createInstance(canvas, width, height);
 		this.strokesLayer = this.canvas.createLayer();
+		this.originLayer = this.canvas.createLayer();
 		this.bitmapLayer = this.canvas.createLayer();
 
 		this.strokeRenderer = new StrokeRenderer2D(this.canvas);
 
-		this.lens = new Lens(this.canvas, transform => {
-			this.strokeRenderer.setTransform(transform);
-			this.redraw();
+		this.lens = new Lens(this.canvas, {
+			refresh: transform => {
+				this.canvas.clear();
+				this.canvas.blend(this.originLayer, {transform});
 
-			layout.updatePaper(transform);
-		}, this.abort.bind(this));
+				layout.updatePaper(transform);
+			},
+			redraw: utils.debounce(transform => {
+				this.preventOriginRedraw = true;
+
+				this.strokeRenderer.setTransform(transform);
+				this.redraw();
+
+				this.preventOriginRedraw = false;
+			}, 300),
+			abort: this.abort.bind(this)
+		});
 
 		this.selection = new SelectionVector(this.dataModel, {
 			lens: this.lens,
