@@ -7,7 +7,7 @@ img {border: none;}
 a {text-decoration: none;}
 
 canvas {position: absolute; left: 0; top: 0;}
-canvas {
+canvas, .title, .identity {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;

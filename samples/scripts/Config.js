@@ -139,8 +139,9 @@ let config = {
 			statics: {},
 
 			pipeline: {
-				excludedPipelineStages: [PipelineStage.SMOOTHER, PipelineStage.POLYGON_MERGER, PipelineStage.POLYGON_SIMPLIFIER],
-				lastPipelineStage: PipelineStage.CONVEX_HULL_CHAIN_PRODUCER,
+				// excludedPipelineStages: [PipelineStage.SMOOTHER, PipelineStage.POLYGON_MERGER, PipelineStage.POLYGON_SIMPLIFIER],
+				excludedPipelineStages: [PipelineStage.POLYGON_MERGER, PipelineStage.POLYGON_SIMPLIFIER],
+				lastPipelineStage: PipelineStage.CONVEX_HULL_CHAIN_PRODUCER
 			}
 		},
 

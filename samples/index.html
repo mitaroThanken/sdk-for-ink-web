@@ -125,7 +125,7 @@
 					<img id="brush" src="/images/btn_tools/btn_brush.png" title="Brush" class="Tool" alt="" />
 					<img id="marker" src="/images/btn_tools/btn_marker.png" title="Marker" class="Tool" alt="" />
 
-					<img id="basic" name="basic" src="/images/btn_tools/btn_basic_brush.png" title="Basic2" class="Tool DelimiterLeft" alt="" />
+					<img id="basic" name="basic" src="/images/btn_tools/btn_basic_brush.png" title="Basic" class="Tool DelimiterLeft" alt="" />
 				</span>
 
 				<span class="RasterPart">
@@ -174,8 +174,8 @@
 				<span id="SDKVersion"></span>
 			</h5>
 
-			<canvas class="layer-transforms" style="display: none" oncontextmenu="event.preventDefault()"></canvas>
-			<canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+			<canvas class="layer-transforms" style="display: none" ontouchmove="event.preventDefault()" oncontextmenu="event.preventDefault()"></canvas>
+			<canvas id="canvas" ontouchmove="event.preventDefault()" oncontextmenu="event.preventDefault()"></canvas>
 
 			<div class="selection selection-vector" style="display: none"></div>
 		</div>

@@ -55,7 +55,7 @@ class Lens {
 		}.bind(this);
 
 		this.onPinch = function onPinch(e) {
-			this.zoom(e.detail.pin, e.detail.scale);
+			this.zoom(e.detail.anchor, e.detail.scale);
 			this.pan(e.detail.translation);
 		}.bind(this);
 	}
