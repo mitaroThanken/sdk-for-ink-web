@@ -5,9 +5,11 @@ class InkCanvasVector extends InkCanvas {
 		this.canvas = InkCanvas2D.createInstance(canvas, width, height);
 		this.strokesLayer = this.canvas.createLayer();
 		this.originLayer = this.canvas.createLayer();
-		this.bitmapLayer = this.canvas.createLayer();
 
 		this.strokeRenderer = new StrokeRenderer2D(this.canvas);
+
+		this.strokeRendererOrigin = new StrokeRenderer2D(this.canvas);
+		this.strokeRendererOrigin.layer.resize(this.originLayer.width, this.originLayer.height);
 
 		this.lens = new Lens(this.canvas, {
 			refresh: transform => {
@@ -27,6 +29,9 @@ class InkCanvasVector extends InkCanvas {
 			abort: this.abort.bind(this)
 		});
 
+		this.lens.modelBounds = this.originLayer.bounds;
+		layout.setPaperSize(this.originLayer.width, this.originLayer.height);
+
 		this.selection = new SelectionVector(this.dataModel, {
 			lens: this.lens,
 			canvas: this.canvas,
@@ -36,22 +41,6 @@ class InkCanvasVector extends InkCanvas {
 		this.selection.connect();
 
 		Object.defineProperty(this, "transform", {get: () => this.lens.transform, set: value => (this.lens.transform = value), enumerable: true});
-	}
-
-	streamUpdatedArea(data, updatedArea, complete) {
-		this.bitmapLayer.clear();
-		this.bitmapLayer.putImageData(data, updatedArea.x, updatedArea.y);
-
-		this.canvas.clear(updatedArea);
-		this.canvas.blend(this.strokesLayer, {rect: updatedArea});
-		this.canvas.blend(this.bitmapLayer, {rect: updatedArea});
-
-		if (complete) {
-			this.strokesLayer.blend(this.bitmapLayer, {rect: updatedArea});
-
-			this.canvas.clear(updatedArea);
-			this.canvas.blend(this.strokesLayer, {rect: updatedArea});
-		}
 	}
 
 	setTool(toolID) {

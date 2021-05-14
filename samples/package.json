@@ -1,7 +1,7 @@
 {
   "name": "will3-sdk-for-ink-web-demo",
   "productName": "WILL3 SDK for Ink - Web Demo",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "WILL 3 - Rendering, Manipulations and Serialization (Universal Ink Model) Demo",
   "main": "main.js",
   "dependencies": {
@@ -11,7 +11,7 @@
     "jquery-contextmenu": "^2.9.2"
   },
   "scripts": {
-    "preinstall": "./preinstall.sh",
+    "preinstall": "source ./preinstall.sh",
     "start": "python -m SimpleHTTPServer 8080"
   },
   "author": "Tzvetelin Vassilev",

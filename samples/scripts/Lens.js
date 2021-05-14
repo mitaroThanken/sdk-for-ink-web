@@ -7,6 +7,9 @@ class Lens {
 		this.canvas = canvas;
 		this.abort = canvasBridge.abort;
 
+		this.canvasBounds = canvas.bounds;
+		this.modelBounds = this.canvasBounds;
+
 		let matrix = new Matrix();
 
 		Object.defineProperty(this, "transform", {
@@ -14,6 +17,8 @@ class Lens {
 				return matrix;
 			},
 			set: function(value) {
+				if (value == this.transform) return;
+
 				matrix = value;
 
 				canvasBridge.refresh(value);
@@ -37,6 +42,11 @@ class Lens {
 
 		this.onPan = function onPan(e) {
 			if (e.buttons != 2) return;
+			// if (!e.ctrlKey && !e.metaKey) return;
+			if (e.ctrlKey || e.metaKey) return;
+
+			// pen hover before pan end
+			if (!lastPoint) return;
 
 			let delta = {x: e.offsetX - lastPoint.x, y: e.offsetY - lastPoint.y};
 			lastPoint = {x: e.offsetX, y: e.offsetY};
@@ -112,61 +122,68 @@ class Lens {
 		if (scale.a != sx || scale.d != sy)
 			scale = Matrix.fromMatrix({a: sx, b: scale.b, c: scale.c, d: sy, tx: scale.tx, ty: scale.ty});
 
-		this.normalizeTransform(scale);
+		this.focus(scale);
 	}
 
 	pan(delta) {
 		let translation = this.transform.translate(delta);
 
-		this.normalizeTransform(translation);
+		this.focus(translation);
 	}
 
-	normalizeTransform(matrix) {
+	focus(candidateTransform = this.transform) {
 		if (ENDLESS_CANVAS) {
-			this.transform = matrix;
+			this.transform = candidateTransform;
 			return;
 		}
 
-		let surfaceBounds = this.canvas.bounds;
-		let modelBounds = this.modelToView(this.canvas.bounds);
+		let visibleArea = this.viewToModel(this.canvas.bounds, candidateTransform);
 
-		let tx = matrix.tx;
-		let ty = matrix.ty;
+		let tx = 0;
+		let ty = 0;
 
-		if (this.transform.a < 1) {
-			if (modelBounds.left < 0) tx -= modelBounds.left;
-			if (modelBounds.right > surfaceBounds.width) tx += surfaceBounds.width - modelBounds.right;
-			if (modelBounds.top < 0) ty -= modelBounds.top;
-			if (modelBounds.bottom > surfaceBounds.height) ty += surfaceBounds.height - modelBounds.bottom;
+		// scale above 1 or equals
+		if (this.transform.a >= 1) {
+			if (visibleArea.left < 0) tx = -visibleArea.left;
+			if (visibleArea.top < 0) ty = -visibleArea.top;
+
+			if (visibleArea.width + candidateTransform.tx < this.modelBounds.width && visibleArea.right > this.modelBounds.width) tx = this.modelBounds.width - visibleArea.right;
+			if (visibleArea.height + candidateTransform.ty < this.modelBounds.height && visibleArea.bottom > this.modelBounds.height) ty = this.modelBounds.height - visibleArea.bottom;
 		}
 		else {
-			if (modelBounds.left > 0) tx -= modelBounds.left;
-			if (modelBounds.right < surfaceBounds.width) tx += surfaceBounds.width - modelBounds.right;
-			if (modelBounds.top > 0) ty -= modelBounds.top;
-			if (modelBounds.bottom < surfaceBounds.height) ty += surfaceBounds.height - modelBounds.bottom;
+			if (this.modelBounds == this.canvasBounds) {
+				if (visibleArea.left > 0) tx = -visibleArea.left;
+				if (visibleArea.top > 0) ty = -visibleArea.top;
+				if (visibleArea.right < this.modelBounds.width) tx = this.modelBounds.width - visibleArea.right;
+				if (visibleArea.bottom < this.modelBounds.height) ty = this.modelBounds.height - visibleArea.bottom;
+			}
 		}
 
-		if (matrix.tx != tx || matrix.ty != ty)
-			this.transform = Matrix.fromMatrix({a: matrix.a, b: matrix.b, c: matrix.c, d: matrix.d, tx, ty});
+		if (tx != 0 || ty != 0) {
+			tx *= candidateTransform.a;
+			ty *= candidateTransform.d;
+
+			this.transform = Matrix.fromMatrix({a: candidateTransform.a, b: candidateTransform.b, c: candidateTransform.c, d: candidateTransform.d, tx: candidateTransform.tx - tx, ty: candidateTransform.ty - ty});
+		}
 		else
-			this.transform = matrix;
+			this.transform = candidateTransform;
 	}
 
 	reset() {
 		this.transform = new Matrix();
 	}
 
-	modelToView(modelRect) {
-		if (this.transform.isIdentity)
+	modelToView(modelRect, transform = this.transform) {
+		if (transform.isIdentity)
 			return modelRect;
 		else
-			return modelRect.transform(this.transform);
+			return modelRect.transform(transform);
 	}
 
-	viewToModel(viewRect) {
-		if (this.transform.isIdentity)
+	viewToModel(viewRect, transform = this.transform) {
+		if (transform.isIdentity)
 			return viewRect;
 		else
-			return viewRect.transform(this.transform.invert());
+			return viewRect.transform(transform.invert());
 	}
 }

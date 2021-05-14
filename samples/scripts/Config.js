@@ -15,7 +15,7 @@ let config = {
 
 					velocity: {
 						min: 5,
-						max: 210,
+						max: 4000,
 
 						remap: v => ValueTransformer.sigmoid(v, 0.62, true)
 						// remap: "will://generic/action-remap/Sigmoid?p=0.62&reverse=true"
@@ -107,6 +107,7 @@ let config = {
 
 		marker: {
 			brush: BrushPalette.circle,
+			blendMode: BlendMode.DESTINATION_OVER,
 
 			statics: {
 				size: 3.4,

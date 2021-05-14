@@ -45,6 +45,14 @@ let layout = {
 		rule.style.transform = transform.toString();
 	},
 
+	setPaperSize(width, height) {
+		let sheet = Array.from(document.styleSheets).filter(sheet => sheet.title == "main").first;
+		let rule = Array.from(sheet.rules).filter(rule => rule.selectorText == ".Wrapper::before").first;
+
+		rule.style.width = `${width}px`;
+		rule.style.height = `${height}px`;
+	},
+
 	extractColor(node, opacity) {
 		let rgba = [];
 

@@ -37,11 +37,6 @@ let app = {
 
 		await BrushPalette.configure(inkCanvasRaster.canvas.ctx);
 
-		if (!pureGLCanvas) {
-			inkCanvasRaster.strokeRenderer.streamUpdatedArea = inkCanvasVector.streamUpdatedArea.bind(inkCanvasVector);
-			inkCanvasVector.inkCanvasRaster = inkCanvasRaster;
-		}
-
 		let device = await InputDevice.createInstance({"app.id": "will3-sdk-for-ink-web-demo", "app.version": "1.0.0"});
 
 		if (inkCanvasVector) inkCanvasVector.init(device, "pen", color);
@@ -81,12 +76,22 @@ let app = {
 		window.addEventListener("DOMMouseScroll", function(e) {
 			if (e.cancelable && (e.ctrlKey || e.metaKey))
 				e.preventDefault();
-		});
+		}, {passive: false});
 
 		window.addEventListener("mousewheel", function(e) {
 			if (e.cancelable && (e.ctrlKey || e.metaKey))
 				e.preventDefault();
-		});
+		}, {passive: false});
+
+		window.addEventListener("wheel", function(e) {
+			if (e.cancelable && (e.ctrlKey || e.metaKey))
+				e.preventDefault();
+		}, {passive: false});
+
+		// prevents Scribble for iOS
+		window.addEventListener("touchmove", function(e) {
+			e.preventDefault();
+		}, {passive: false});
 	}
 };
 

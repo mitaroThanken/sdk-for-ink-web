@@ -1,17 +1,22 @@
 class CanvasTransformer extends CanvasBubble {
-	constructor(lens, width, height) {
+	constructor(lens, width, height, modelSize) {
 		super(".layer-transforms", lens, width, height);
 
-		this.canvas = InkCanvas2D.createInstance(this.surface, width, height);
-		this.originLayer = this.canvas.createLayer();
+		this.modelSize = modelSize;
 
-		this.strokeRenderer = new StrokeRenderer2D(this.canvas);
+		this.canvas = InkCanvas2D.createInstance(this.surface, width, height);
+		this.originLayer = this.canvas.createLayer(modelSize);
+
+		this.strokeRenderer = new StrokeRenderer2D(this.canvas, modelSize);
 	}
 
 	draw(strokes) {
 		let dirtyArea;
 
 		this.originLayer.clear();
+
+		if (!this.modelSize)
+			this.strokeRenderer.setTransform(this.transform);
 
 		strokes.forEach(stroke => {
 			this.strokeRenderer.draw(stroke);
@@ -25,10 +30,12 @@ class CanvasTransformer extends CanvasBubble {
 	}
 
 	refresh(transform) {
-		if (transform)
-			transform = this.transform.multiply(transform);
-		else
-			transform = this.transform;
+		if (this.modelSize) {
+			if (transform)
+				transform = this.transform.multiply(transform);
+			else
+				transform = this.transform;
+		}
 
 		this.canvas.clear();
 		this.canvas.blend(this.originLayer, {transform});

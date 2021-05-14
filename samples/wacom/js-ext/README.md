@@ -18,3 +18,6 @@ The Javascript extension. Provides additional functionality to classes when they
  * DOMPoint
  * DOMRect
  * DOMMatrix
+
+Functionallity extensions through not existant classes:
+ * DOMSize

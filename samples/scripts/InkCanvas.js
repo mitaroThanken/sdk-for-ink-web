@@ -155,17 +155,12 @@ class InkCanvas extends InkController {
 			}
 		}
 		else if (pathPart.phase == InkBuilder.Phase.END) {
+			if (!this.strokeRenderer.strokeBounds) return;
+
 			let dirtyArea = this.canvas.bounds.intersect(this.strokeRenderer.strokeBounds.union(this.strokeRenderer.updatedArea));
 
 			if (dirtyArea) {
 				if (!this.selector && !this.intersector) {
-					if (app.type == app.Type.VECTOR) {
-						let size = config.getSize(this.toolID);
-
-						if (size.max < 2 || size.min < 1)
-							this.strokeRenderer.draw(this.builder.getInkPath(), true);
-					}
-
 					this.strokeRenderer.blendStroke(this.strokesLayer);
 					this.refresh(dirtyArea);
 				}
@@ -223,7 +218,7 @@ class InkCanvas extends InkController {
 		let dirtyArea;
 
 		if (this.strokeRenderer.strokeBounds)
-			dirtyArea = this.strokeRenderer.strokeBounds.union(this.strokeRenderer.preliminaryDirtyArea);
+			dirtyArea = this.strokeRenderer.strokeBounds.union(this.strokeRenderer.updatedArea);
 
 		this.strokeRenderer.abort();
 		this.builder.abort();
@@ -240,6 +235,9 @@ class InkCanvas extends InkController {
 		this.canvas.resize(width, height);
 		this.resizeStack(width, height);
 
+		if (this.lens)
+			this.lens.focus();
+
 		this.refresh();
 	}
 
@@ -250,24 +248,33 @@ class InkCanvas extends InkController {
 		});
 	}
 
-	redraw(dirtyArea = this.canvas.bounds, excludedStrokes = []) {
-		let modelArea = dirtyArea;
-		let viewArea = dirtyArea;
+	redraw(dirtyArea, excludedStrokes = []) {
+		let modelArea;
+		let viewArea;
 
-		if (this.lens) {
-			modelArea = dirtyArea.model ? dirtyArea : this.lens.viewToModel(dirtyArea);
-			viewArea = dirtyArea.model ? this.lens.modelToView(dirtyArea) : dirtyArea;
+		if (dirtyArea) {
+			if (this.lens) {
+				modelArea = dirtyArea.model ? dirtyArea : this.lens.viewToModel(dirtyArea);
+				viewArea = dirtyArea.model ? this.lens.modelToView(dirtyArea) : dirtyArea;
+			}
+			else {
+				modelArea = dirtyArea;
+				viewArea = dirtyArea;
+			}
+
+			viewArea = viewArea.intersect(this.canvas.bounds);
 		}
-
-		viewArea = viewArea.intersect(this.canvas.bounds);
+		else
+			viewArea = this.canvas.bounds;
 
 		this.strokesLayer.clear(viewArea);
 		this.clearOrigin(modelArea);
 
 		for (let stroke of this.strokes) {
 			if (excludedStrokes.includes(stroke)) continue;
+			if (!stroke.style.visibility) continue;
 
-			if (stroke.bounds.intersect(modelArea)) {
+			if (!modelArea || stroke.bounds.intersect(modelArea)) {
 				if (this.strokeRenderer instanceof StrokeRenderer2D && stroke.brush instanceof BrushGL) {
 					this.inkCanvasRaster.strokeRenderer.draw(stroke);
 					this.inkCanvasRaster.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
@@ -278,7 +285,7 @@ class InkCanvas extends InkController {
 				this.strokeRenderer.draw(stroke);
 				this.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
 
-				this.drawOrigin(stroke, viewArea);
+				this.drawOrigin(stroke, modelArea);
 			}
 		}
 
@@ -291,15 +298,11 @@ class InkCanvas extends InkController {
 		this.originLayer.clear(modelArea);
 	}
 
-	drawOrigin(stroke, viewArea) {
+	drawOrigin(stroke, modelArea) {
 		if (app.type == app.Type.RASTER || this.preventOriginRedraw) return;
 
-		this.strokeRenderer.setTransform();
-
-		this.strokeRenderer.draw(stroke);
-		this.strokeRenderer.blendStroke(this.originLayer, viewArea);
-
-		this.strokeRenderer.setTransform(this.transform);
+		this.strokeRendererOrigin.draw(stroke);
+		this.strokeRendererOrigin.blendStroke(this.originLayer, modelArea);
 	}
 
 	refresh(dirtyArea = this.canvas.bounds) {

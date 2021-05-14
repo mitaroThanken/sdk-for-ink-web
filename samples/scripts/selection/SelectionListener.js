@@ -30,15 +30,13 @@ let SelectionListener = {
 
 		$(`.${selection.canvasSelector}`).on("mousedown", function(e) {
 			if (e.buttons != 2) return;
+			// if (e.ctrlKey || e.metaKey) return;
+			if (!e.ctrlKey && !e.metaKey) return;
 
-			let show = WILL.transform.isIdentity || e.ctrlKey || e.metaKey;
+			$(`.${selection.canvasSelector}`).contextMenu({x: e.pageX, y: e.pageY});
 
-			if (show) {
-				$(`.${selection.canvasSelector}`).contextMenu({x: e.pageX, y: e.pageY});
-
-				e.preventDefault();
-				e.stopPropagation();
-			}
+			e.preventDefault();
+			e.stopPropagation();
 		});
 
 		$.contextMenu({
