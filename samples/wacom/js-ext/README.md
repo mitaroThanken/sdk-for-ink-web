@@ -7,10 +7,13 @@ The Javascript extension. Provides additional functionality to classes when they
  * Object
  * String
  * Number
+ * Function
  * Array
  * ArrayBuffer
  * TypedArray
+ * Set
  * Screen
+ * Location
  * HTMLElement
  * HTMLImageElement
  * Image
