@@ -11,7 +11,7 @@ addEventListener("DOMContentLoaded", async (event) => {
 	document.getElementById("SDKVersion").textContent = version;
 
 	$(".app").css("visibility", "hidden");
-	app.init();
+	await app.init();
 
 	if (!localStorage.getItem("sample")) return;
 

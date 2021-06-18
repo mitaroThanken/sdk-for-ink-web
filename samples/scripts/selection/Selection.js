@@ -113,7 +113,7 @@ class Selection {
 						input.click();
 					}
 				},
-				export: {name: "Export"}
+				export: {name: "Export", disabled: () => !!this.selection}
 			}
 		});
 	}

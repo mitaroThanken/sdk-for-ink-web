@@ -46,7 +46,7 @@ class DataModel {
 	}
 
 	getStrokes(strokeIDs) {
-		return strokeIDs.map(strokeID => this.inkModel.getItem(strokeID));
+		return strokeIDs.map(strokeID => this.inkModel.getStroke(strokeID));
 	}
 
 	importModel(inkModel) {
@@ -66,7 +66,7 @@ class DataModel {
 	}
 
 	getBrush(name) {
-		return this.repository.getItem(name);
+		return this.repository.getBrush(name);
 	}
 
 	reset(inkModel) {

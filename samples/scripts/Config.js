@@ -475,8 +475,8 @@ let config = {
 			dynamics: {
 				size: {
 					value: {
-						min: 8,
-						max: 12
+						min: 16,
+						max: 24
 					},
 
 					velocity: {
@@ -528,8 +528,8 @@ let config = {
 			dynamics: {
 				size: {
 					value: {
-						min: 8,
-						max: 12
+						min: 16,
+						max: 64
 					},
 
 					velocity: {

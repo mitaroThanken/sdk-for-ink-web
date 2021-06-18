@@ -15,19 +15,9 @@
 	<script type="text/javascript" src="/node_modules/jquery-contextmenu/dist/jquery.contextMenu.min.js"></script>
 	<script type="text/javascript" src="/node_modules/jquery-contextmenu/dist/jquery.ui.position.min.js"></script>
 
-	<!-- wacom-digital-ink dependencies -->
-	<script type="text/javascript" src="/node_modules/clipper-lib/clipper.js"></script>
-	<script type="text/javascript" src="/node_modules/js-md5/build/md5.min.js"></script>
-	<script type="text/javascript" src="/node_modules/poly2tri/dist/poly2tri.min.js"></script>
-	<script type="text/javascript" src="/node_modules/long/dist/long.js"></script>
-	<script type="text/javascript" src="/node_modules/protobufjs/dist/protobuf.min.js"></script>
-	<script type="text/javascript" src="/node_modules/gl-matrix/gl-matrix-min.js"></script>
-	<script type="text/javascript" src="/node_modules/rbush/rbush.min.js"></script>
-
-	<script type="text/javascript" src="/node_modules/js-ext/js-ext-min.js"></script>
-
-	<!-- wacom-digital-ink engine -->
-	<script src="/node_modules/digital-ink/digital-ink-min.js"></script>
+	<!-- digital-ink engine -->
+	<script src="/node_modules/digital-ink/web-integrator/web-integrator.js"></script>
+	<script type="text/javascript">DigitalInkWebIntegrator.integrate();</script>
 
 	<!-- dom-transformer event -->
 	<link rel="stylesheet" type="text/css" href="/node_modules/dom-transformer/dom-transformer.css" />
@@ -46,7 +36,7 @@
 			InkPath2D, Stroke,
 			InkModel, SpatialContext, InkCodec,
 			Color, Rect, Point, Matrix,
-			PipelineStage, BlendMode,
+			PipelineStage, ConvexHullChainProducer, BlendMode,
 			InkCanvas2D, StrokeRenderer2D,
 			InkCanvasGL, StrokeRendererGL
 		} = DigitalInk;
@@ -64,6 +54,7 @@
 	<script type="text/javascript" src="./scripts/Lens.js"></script>
 	<script type="text/javascript" src="./scripts/InkCanvas.js"></script>
 	<script type="text/javascript" src="./scripts/InkCanvasVector.js"></script>
+	<script type="text/javascript" src="./scripts/InkCanvasRasterRuntime.js"></script>
 	<script type="text/javascript" src="./scripts/InkCanvasRaster.js"></script>
 
 	<script type="text/javascript" src="./scripts/selection/CanvasBubble.js"></script>
@@ -73,6 +64,7 @@
 
 	<script type="text/javascript" src="./scripts/selection/Selection.js"></script>
 	<script type="text/javascript" src="./scripts/selection/SelectionVector.js"></script>
+	<script type="text/javascript" src="./scripts/selection/SelectionRaster.js"></script>
 	<script type="text/javascript" src="./scripts/selection/SelectionListener.js"></script>
 
 	<script type="text/javascript" src="/scripts/layout/DropDown.js"></script>
@@ -94,7 +86,8 @@
 				</ol>
 				<li>Mixed Canvas</li>
 				<ol>
-					<li><a href="javascript: void(0)" id="sample3" onclick="app.redirect(3)">Mixed Ink Demo (WebGL canvas + Vector brush)</a></li>
+					<li><a href="javascript: void(0)" id="sample3" onclick="app.redirect(3)">Mixed Ink Demo (Vector canvas + Raster brush)</a></li>
+					<li><a href="javascript: void(0)" id="sample4" onclick="app.redirect(4)">Mixed Ink Demo (Raster canvas + Vector brush)</a></li>
 				</ol>
 				</li>
 			</ol>
@@ -125,7 +118,7 @@
 					<img id="brush" src="/images/btn_tools/btn_brush.png" title="Brush" class="Tool" alt="" />
 					<img id="marker" src="/images/btn_tools/btn_marker.png" title="Marker" class="Tool" alt="" />
 
-					<img id="basic" name="basic" src="/images/btn_tools/btn_basic_brush.png" title="Basic" class="Tool DelimiterLeft" alt="" />
+					<img id="basic" name="basic" src="/images/btn_tools/btn_basic_brush.png" title="Basic" class="Tool PureVector DelimiterLeft" alt="" />
 				</span>
 
 				<span class="RasterPart">
@@ -142,8 +135,9 @@
 					<img id="eraserWholeStroke" src="/images/btn_tools/eraser_whole_stroke.png" class="Tool" title="Whole Stroke Eraser" alt="" />
 				</span>
 
+				<img id="selector" src="/images/btn_tools/btn_selector.png" class="Tool DelimiterLeft" title="Selector" alt="" />
+
 				<span class="PureVector">
-					<img id="selector" src="/images/btn_tools/btn_selector.png" class="Tool VectorPart DelimiterLeft" title="Selector" alt="" />
 					<img id="selectorWholeStroke" src="/images/btn_tools/btn_selector_whole_stroke.png" class="Tool VectorPart" title="Whole Stroke Selector" alt="" />
 				</span>
 
@@ -152,6 +146,7 @@
 				<input id="load_tool" type="file" accept="application/protobuf; proto=WacomInkFormat3.Tool" onchange="WILL.import(this, 'tool')" />
 
 				<div class="BackToMenu">
+					<a href="javascript:void(0)" title="Toggle Pointer prediction" class="Button pointerPrediction" onclick="layout.toggleParam('pointerPrediction')">PP</a>
 					<a href="javascript:void(0)" title="Toggle downsampling" class="Button downsampling" onclick="layout.toggleParam('downsampling')">DS</a>
 					<img src="/images/btn_back.png" title="Back to menu" onclick="app.redirect()" style="cursor: pointer" alt="" />
 				</div>
@@ -175,9 +170,12 @@
 			</h5>
 
 			<canvas class="layer-transforms" style="display: none" oncontextmenu="event.preventDefault()"></canvas>
-			<canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+			<canvas id="surface" oncontextmenu="event.preventDefault()"></canvas>
+			<canvas id="raster-runtime" style="display: none" oncontextmenu="event.preventDefault()"></canvas>
 
 			<div class="selection selection-vector" style="display: none"></div>
+			<div class="selection selection-raster" style="display: none"></div>
 		</div>
 	</div>
 

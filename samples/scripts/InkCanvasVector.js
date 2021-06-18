@@ -7,9 +7,7 @@ class InkCanvasVector extends InkCanvas {
 		this.originLayer = this.canvas.createLayer();
 
 		this.strokeRenderer = new StrokeRenderer2D(this.canvas);
-
-		this.strokeRendererOrigin = new StrokeRenderer2D(this.canvas);
-		this.strokeRendererOrigin.layer.resize(this.originLayer.width, this.originLayer.height);
+		this.strokeRendererOrigin = new StrokeRenderer2D(this.canvas, {width: this.originLayer.width, height: this.originLayer.height});
 
 		this.lens = new Lens(this.canvas, {
 			refresh: transform => {
@@ -33,24 +31,74 @@ class InkCanvasVector extends InkCanvas {
 		layout.setPaperSize(this.originLayer.width, this.originLayer.height);
 
 		this.selection = new SelectionVector(this.dataModel, {
+			modelSize: this.originLayer.bounds,
 			lens: this.lens,
 			canvas: this.canvas,
 			redraw: this.redraw.bind(this)
 		});
 
 		this.selection.connect();
-
-		Object.defineProperty(this, "transform", {get: () => this.lens.transform, set: value => (this.lens.transform = value), enumerable: true});
 	}
 
-	setTool(toolID) {
+	async setTool(toolID) {
 		super.setTool(toolID);
 
 		if (config.getBrush(toolID) instanceof BrushGL) {
+			await this.activateRasterCanvas();
+
 			this.inkCanvasRaster.setTool(this.toolID);
-			this.forward = true;
 		}
 		else
-			this.forward = false;
+			this.deactivateRasterCanvas();
+	}
+
+	setColor(color) {
+		super.setColor(color);
+
+		if (this.inkCanvasRaster) this.inkCanvasRaster.setColor(color);
+	}
+
+	async allocateRasterCanvas() {
+		// protector.open();
+
+		let canvas = document.querySelector("#raster-runtime");
+
+		this.inkCanvasRaster = new InkCanvasRasterRuntime(canvas);
+
+		this.inkCanvasRaster.strokesLayer = this.strokesLayer;
+
+		this.inkCanvasRaster.lens = this.lens;
+		// this.inkCanvasRaster.history = this.history;
+
+		this.inkCanvasRaster.refresh2D = (dirtyArea) => this.refresh(dirtyArea);
+
+		await this.inkCanvasRaster.init(this.builder.device, this.toolID, this.color);
+
+		// protector.close();
+	}
+
+	async getGLContext() {
+		if (!this.inkCanvasRaster) await this.allocateRasterCanvas();
+
+		return this.inkCanvasRaster.canvas.ctx;
+	}
+
+	async activateRasterCanvas() {
+		if (!this.inkCanvasRaster) await this.allocateRasterCanvas();
+		if (this.inkCanvasRaster.canvas.surface.style.display == "") return;
+
+		InputListener.close(this);
+		InputListener.open(this.inkCanvasRaster);
+
+		this.inkCanvasRaster.canvas.surface.style.display = "";
+	}
+
+	deactivateRasterCanvas() {
+		if (!this.inkCanvasRaster || this.inkCanvasRaster.canvas.surface.style.display == "none") return;
+
+		InputListener.close(this.inkCanvasRaster);
+		InputListener.open(this);
+
+		this.inkCanvasRaster.canvas.surface.style.display = "none";
 	}
 }

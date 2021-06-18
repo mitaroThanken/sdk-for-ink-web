@@ -1,7 +1,14 @@
 let app = {
 	get downsampling() { return localStorage.getItem("downsampling") == "true" },
+	get pointerPrediction() { return localStorage.getItem("pointerPrediction") == "true" },
+	get prediction() { return true },
 
-	init() {
+	async init() {
+		let packageJSON = await fsx.loadFile("../package.json", "json");
+
+		this.name = packageJSON.name;
+		this.version = packageJSON.version;
+
 		let sample = parseInt(localStorage.getItem("sample"));
 
 		if (sample) {
@@ -12,6 +19,14 @@ let app = {
 
 			document.querySelector(".title").innerText = sample + ". " + document.querySelector("#sample" + sample).innerHTML;
 			document.querySelector(".app").style.display = "";
+
+			// Safari bug-fix, Safari check is needed
+			document.addEventListener("visibilitychange", e => {
+				let selection = app.inkCanvas.selection;
+
+				if (selection && selection.active && document.visibilityState == "visible")
+					setTimeout(() => selection.transform(), 250);
+			});
 		}
 		else
 			document.querySelector(".menu").style.display = "";
@@ -22,38 +37,51 @@ let app = {
 	async initInkController() {
 		this.model = new DataModel();
 
+		let device = await InputDevice.createInstance({"app.id": this.name, "app.version": this.version});
+
+		let canvas = document.querySelector("#surface");
+
 		let width = $(".Wrapper").width();
 		let height = $(".Wrapper").height();
 		let color = layout.extractColor($("nav .Color")[0]);
+		let toolID;
 
-		let pureGLCanvas = (sample == 2 || sample == 3);
-		let canvas = document.querySelector("#canvas");
-		canvas.className = pureGLCanvas ? "raster-canvas" : "vector-canvas";
+		let inkCanvas;
 
-		let glCanvas = new OffscreenCanvas(width, height);
+		if (sample == 2 || sample == 4) {
+			toolID = "pencil";
+			canvas.className = "raster-canvas";
 
-		let inkCanvasVector = pureGLCanvas ? null : new InkCanvasVector(canvas, width, height)
-		let inkCanvasRaster = new InkCanvasRaster(pureGLCanvas ? canvas : glCanvas, width, height)
+			config.tools.eraser = config.tools.eraserRaster;
 
-		await BrushPalette.configure(inkCanvasRaster.canvas.ctx);
+			Object.defineProperty(app, "type", {value: app.Type.RASTER, enumerable: true});
 
-		let device = await InputDevice.createInstance({"app.id": "will3-sdk-for-ink-web-demo", "app.version": "1.0.0"});
+			inkCanvas = new InkCanvasRaster(canvas, width, height);
+		}
+		else {
+			toolID = "pen";
+			canvas.className = "vector-canvas";
 
-		if (inkCanvasVector) inkCanvasVector.init(device, "pen", color);
-		inkCanvasRaster.init(device, "pencil", color);
+			config.tools.eraser = config.tools.eraserVector;
 
-		let inkCanvas = pureGLCanvas ? inkCanvasRaster : inkCanvasVector;
+			Object.defineProperty(app, "type", {value: app.Type.VECTOR, enumerable: true});
+
+			inkCanvas = new InkCanvasVector(canvas, width, height);
+
+			if (sample == 3)
+				inkCanvas.lens.disable();
+		}
+
+		await inkCanvas.init(device, toolID, color);
 
 		Object.defineProperty(app, "inkCanvas", {value: inkCanvas, enumerable: true});
-		Object.defineProperty(app, "type", {value: pureGLCanvas ? app.Type.RASTER : app.Type.VECTOR, enumerable: true});
-
 		window.WILL = inkCanvas;
 
-		config.tools.eraser = (sample == 1) ? config.tools.eraserVector : config.tools.eraserRaster;
+		inkCanvas.resizeStack(width, height);
 
 		layout.selectTool(inkCanvas.toolID);
 
-		InputListener.open(inkCanvas);
+		InputListener.open(inkCanvas);;
 	},
 
 	redirect(sample) {

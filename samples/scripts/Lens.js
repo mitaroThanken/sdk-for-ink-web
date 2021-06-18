@@ -22,7 +22,9 @@ class Lens {
 				matrix = value;
 
 				canvasBridge.refresh(value);
-				canvasBridge.redraw(value);
+
+				if (canvasBridge.redraw)
+					canvasBridge.redraw(value);
 			},
 			enumerable: true
 		});

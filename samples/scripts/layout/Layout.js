@@ -13,22 +13,25 @@ let layout = {
 			WILL.setTool(this.id);
 		});
 
-		$("nav .ColorBox input[type=color]").on("change", function() {
-			layout.selectColor(this);
+		$("nav .ColorBox input[type=color]").on("input", function() {
+			let color = layout.extractColor(this);
+
+			app.inkCanvas.setColor(color);
 		});
 
+		$("nav .ColorBox input[type=color]").on("change", function() {
+			$(".ColorBox .Color").css("background-color", this.value);
+		});
+
+		if (!PointerEvent.prototype.getPredictedEvents)
+			$(".Button.pointerPrediction").css("display", "none");
+
 		this.toggleParam("downsampling", true);
+		this.toggleParam("pointerPrediction", true);
 	},
 
 	selectTool(id) {
 		$(`nav .Tool#${id}`).trigger("click")
-	},
-
-	selectColor: function(input) {
-		let color = this.extractColor(input);
-
-		$(".ColorBox .Color").css("background-color", input.value);
-		WILL.setColor(color);
 	},
 
 	selectPaper: function(paper) {

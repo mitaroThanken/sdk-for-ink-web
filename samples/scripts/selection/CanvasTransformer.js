@@ -11,20 +11,12 @@ class CanvasTransformer extends CanvasBubble {
 	}
 
 	draw(strokes) {
-		let dirtyArea;
-
 		this.originLayer.clear();
 
 		if (!this.modelSize)
 			this.strokeRenderer.setTransform(this.transform);
 
-		strokes.forEach(stroke => {
-			this.strokeRenderer.draw(stroke);
-			this.strokeRenderer.blendStroke(this.originLayer);
-
-			if (this.strokeRenderer.strokeBounds)
-				dirtyArea = this.strokeRenderer.strokeBounds.union(dirtyArea);
-		});
+		let dirtyArea = this.strokeRenderer.blendStrokes(strokes, this.originLayer);
 
 		this.canvas.blend(this.originLayer, {mode: BlendMode.COPY, rect: dirtyArea});
 	}

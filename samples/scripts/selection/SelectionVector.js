@@ -5,7 +5,7 @@ class SelectionVector extends Selection {
 		this.dataModel = dataModel;
 		this.canvasBridge = canvasBridge;
 
-		this.canvasTransformer = new CanvasTransformer(canvasBridge.lens, canvasBridge.canvas.width, canvasBridge.canvas.height);
+		this.canvasTransformer = new CanvasTransformer(canvasBridge.lens, canvasBridge.canvas.width, canvasBridge.canvas.height, canvasBridge.modelSize);
 		this.codec = new InkCodec();
 
 		this.strokes = [];

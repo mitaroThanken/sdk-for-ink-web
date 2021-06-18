@@ -14,13 +14,14 @@ class InkCanvas extends InkController {
 		};
 
 		this.dataModel = app.model;
+
 		Object.defineProperty(this, "strokes", {get: () => this.dataModel.inkModel.content, enumerable: true});
+		Object.defineProperty(this, "transform", {get: () => this.lens.transform, set: value => (this.lens.transform = value), enumerable: true});
 
 		this.codec = new InkCodec();
 	}
 
 	init(device, toolID, color) {
-		this.device = device;
 		this.builder.device = device;
 
 		this.setTool(toolID);
@@ -30,15 +31,16 @@ class InkCanvas extends InkController {
 	setTool(toolID) {
 		this.toolID = toolID;
 
+		this.intersector = config.tools[toolID].intersector;
+		this.selector = config.tools[toolID].selector;
+		/*
 		if (this.toolID == "basic") {
 			this.device = this.builder.device;
 			this.builder.device = null;
 		}
 		else
 			this.builder.device = this.device;
-
-		this.intersector = config.tools[toolID].intersector;
-		this.selector = config.tools[toolID].selector;
+		*/
 	}
 
 	setColor(color) {
@@ -46,8 +48,6 @@ class InkCanvas extends InkController {
 	}
 
 	registerInputProvider(pointerID, isPrimary) {
-		if (this.forward) return this.inkCanvasRaster.registerInputProvider(pointerID, isPrimary);
-
 		if (Array.isArray(pointerID)) {
 			// multi-touch should handle all changedTouches and to assign builders for each other
 			if (isNaN(this.builder.pointerID))
@@ -60,8 +60,6 @@ class InkCanvas extends InkController {
 	}
 
 	getInkBuilder(pointerID) {
-		if (this.forward) return this.inkCanvasRaster.getInkBuilder(changedTouches);
-
 		if (Array.isArray(pointerID)) {
 			if (pointerID.length > 0 && !pointerID.includes(this.builder.pointerID)) return undefined;
 			return this.builder;
@@ -71,8 +69,6 @@ class InkCanvas extends InkController {
 	}
 
 	reset(sensorPoint) {
-		if (this.forward) return this.inkCanvasRaster.reset(sensorPoint);
-
 		let options = config.getOptions(sensorPoint, this.toolID, this.color);
 
 		this.builder.configure(options.inkBulder);
@@ -81,33 +77,29 @@ class InkCanvas extends InkController {
 		if (this.intersector) {
 			this.intersector.reset(this.dataModel.manipulationsContext);
 
-			this.builder.pathProducer.togglePrediction(false);
+			this.builder.pathProducer.prediction = false;
 		}
 		else
-			this.builder.pathProducer.togglePrediction(true);
+			this.builder.pathProducer.prediction = app.prediction;
 
 		if (this.selector)
 			this.selector.reset(this.dataModel.manipulationsContext);
 	}
 
 	begin(sensorPoint) {
-		if (this.forward) return this.inkCanvasRaster.begin(sensorPoint);
-
 		this.reset(sensorPoint);
 
 		this.builder.add(sensorPoint);
 		this.builder.build();
 	}
 
-	move(sensorPoint) {
-		if (this.forward) return this.inkCanvasRaster.move(sensorPoint);
-
+	move(sensorPoint, prediction) {
 		if (app.downsampling && this.requested) {
 			this.builder.ignore(sensorPoint);
 			return;
 		}
 
-		this.builder.add(sensorPoint);
+		this.builder.add(sensorPoint, app.pointerPrediction ? prediction : undefined);
 
 		if (!this.requested) {
 			this.requested = true;
@@ -119,8 +111,6 @@ class InkCanvas extends InkController {
 	}
 
 	end(sensorPoint) {
-		if (this.forward) return this.inkCanvasRaster.end(sensorPoint);
-
 		this.builder.add(sensorPoint);
 		this.builder.build();
 	}
@@ -142,30 +132,33 @@ class InkCanvas extends InkController {
 		this.strokeRenderer.draw(pathPart.added, pathPart.phase == InkBuilder.Phase.END);
 
 		if (pathPart.phase == InkBuilder.Phase.UPDATE) {
-			if (!["pencil", "inkBrush"].includes(this.toolID))
-				this.strokeRenderer.drawPreliminary(pathPart.predicted);
+			this.strokeRenderer.drawPreliminary(pathPart.predicted);
 
 			let dirtyArea = this.canvas.bounds.intersect(this.strokeRenderer.updatedArea);
 
-			if (dirtyArea) {
-				this.canvas.clear(dirtyArea);
-				this.canvas.blend(this.strokesLayer, {rect: dirtyArea});
-
-				this.strokeRenderer.blendUpdatedArea();
-			}
+			if (dirtyArea)
+				this.present(dirtyArea, pathPart.phase);
 		}
 		else if (pathPart.phase == InkBuilder.Phase.END) {
 			if (!this.strokeRenderer.strokeBounds) return;
+			if (this.selector || this.intersector || this.toolID == "selector") return;
 
 			let dirtyArea = this.canvas.bounds.intersect(this.strokeRenderer.strokeBounds.union(this.strokeRenderer.updatedArea));
 
-			if (dirtyArea) {
-				if (!this.selector && !this.intersector) {
-					this.strokeRenderer.blendStroke(this.strokesLayer);
-					this.refresh(dirtyArea);
-				}
-			}
+			if (dirtyArea)
+				this.present(dirtyArea, pathPart.phase);
 		}
+	}
+
+	present(dirtyArea, phase) {
+		if (phase == InkBuilder.Phase.END)
+			this.strokeRenderer.blendStroke(this.strokesLayer);
+
+		this.canvas.clear(dirtyArea);
+		this.canvas.blend(this.strokesLayer, {rect: dirtyArea});
+
+		if (phase == InkBuilder.Phase.UPDATE)
+			this.strokeRenderer.blendUpdatedArea();
 	}
 
 	erase(pathPart) {
@@ -175,7 +168,7 @@ class InkCanvas extends InkController {
 			this.intersector.updateSegmentation(pathPart.added);
 
 			if (pathPart.phase == InkBuilder.Phase.END) {
-				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath());
+				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath(true));
 				this.split(intersection);
 
 				this.abort();
@@ -204,11 +197,10 @@ class InkCanvas extends InkController {
 			this.selector.updateSegmentation(pathPart.added);
 
 		if (pathPart.phase == InkBuilder.Phase.END) {
-			let stroke = this.strokeRenderer.toStroke(this.builder);
-
-			this.selection.open(stroke, this.selector);
+			let stroke = this.strokeRenderer.toStroke(this.builder, true);
 
 			this.abort();
+			this.selection.open(stroke, this.selector);
 		}
 	}
 
@@ -224,10 +216,10 @@ class InkCanvas extends InkController {
 		this.builder.abort();
 
 		if (dirtyArea)
-			this.refresh(dirtyArea);
+			this.refresh(dirtyArea, true);
 	}
 
-	resize() {
+	resize(reason) {
 		let wrapper = document.querySelector(".Wrapper");
 		let width = wrapper.offsetWidth;
 		let height = wrapper.offsetHeight;
@@ -235,10 +227,12 @@ class InkCanvas extends InkController {
 		this.canvas.resize(width, height);
 		this.resizeStack(width, height);
 
-		if (this.lens)
-			this.lens.focus();
+		this.lens.focus();
 
-		this.refresh();
+		if (reason == InputListener.ResizeReason.ZOOM_OUT || reason == InputListener.ResizeReason.ORIENTATION)
+			this.redraw();
+		else
+			this.refresh();
 	}
 
 	resizeStack(width, height) {
@@ -253,14 +247,8 @@ class InkCanvas extends InkController {
 		let viewArea;
 
 		if (dirtyArea) {
-			if (this.lens) {
-				modelArea = dirtyArea.model ? dirtyArea : this.lens.viewToModel(dirtyArea);
-				viewArea = dirtyArea.model ? this.lens.modelToView(dirtyArea) : dirtyArea;
-			}
-			else {
-				modelArea = dirtyArea;
-				viewArea = dirtyArea;
-			}
+			modelArea = dirtyArea.model ? dirtyArea : this.lens.viewToModel(dirtyArea);
+			viewArea = dirtyArea.model ? this.lens.modelToView(dirtyArea) : dirtyArea;
 
 			viewArea = viewArea.intersect(this.canvas.bounds);
 		}
@@ -270,25 +258,10 @@ class InkCanvas extends InkController {
 		this.strokesLayer.clear(viewArea);
 		this.clearOrigin(modelArea);
 
-		for (let stroke of this.strokes) {
-			if (excludedStrokes.includes(stroke)) continue;
-			if (!stroke.style.visibility) continue;
+		let strokes = this.strokes.filter(stroke => !excludedStrokes.includes(stroke) && stroke.style.visibility && (!modelArea || stroke.bounds.intersect(modelArea)));
 
-			if (!modelArea || stroke.bounds.intersect(modelArea)) {
-				if (this.strokeRenderer instanceof StrokeRenderer2D && stroke.brush instanceof BrushGL) {
-					this.inkCanvasRaster.strokeRenderer.draw(stroke);
-					this.inkCanvasRaster.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
-
-					continue;
-				}
-
-				this.strokeRenderer.draw(stroke);
-				this.strokeRenderer.blendStroke(this.strokesLayer, viewArea);
-
-				this.drawOrigin(stroke, modelArea);
-			}
-		}
-
+		this.strokeRenderer.blendStrokes(strokes, this.strokesLayer, {rect: viewArea}, this.inkCanvasRaster ? this.inkCanvasRaster.strokeRenderer : undefined);
+		this.drawOrigin(strokes, modelArea);
 		this.refresh(viewArea);
 	}
 
@@ -298,11 +271,11 @@ class InkCanvas extends InkController {
 		this.originLayer.clear(modelArea);
 	}
 
-	drawOrigin(stroke, modelArea) {
-		if (app.type == app.Type.RASTER || this.preventOriginRedraw) return;
+	drawOrigin(strokes, modelArea) {
+		if (!this.originLayer || this.preventOriginRedraw) return;
+		if (strokes instanceof Stroke) strokes = [strokes];
 
-		this.strokeRendererOrigin.draw(stroke);
-		this.strokeRendererOrigin.blendStroke(this.originLayer, modelArea);
+		this.strokeRendererOrigin.blendStrokes(strokes, this.originLayer, {rect: modelArea}, this.inkCanvasRaster ? this.inkCanvasRaster.strokeRenderer : undefined);
 	}
 
 	refresh(dirtyArea = this.canvas.bounds) {
@@ -316,7 +289,7 @@ class InkCanvas extends InkController {
 		this.canvas.clear();
 
 		this.dataModel.reset();
-		if (this.lens) this.lens.reset();
+		this.lens.reset();
 	}
 
 	import(input, type) {
@@ -383,7 +356,7 @@ class InkCanvas extends InkController {
 	}
 
 	async openFile(buffer) {
-		let inkModel = this.codec.decodeInkModel(buffer);
+		let inkModel = await this.codec.decodeInkModel(buffer);
 
 		let error;
 
@@ -400,11 +373,18 @@ class InkCanvas extends InkController {
 
 		this.clear();
 
-		for (let brush of inkModel.brushes) {
-			if (brush instanceof BrushGL) {
-				let canvas = this.inkCanvasRaster ? this.inkCanvasRaster.canvas : this.canvas;
-				await brush.configure(canvas.ctx);
-			}
+		let {brushes, strokes} = inkModel;
+
+		for (let i = 0; i < strokes.length; i++) {
+			let stroke = strokes[i];
+			stroke.target = (app.type == app.Type.RASTER) ? Stroke.Target["GL"] : Stroke.Target["2D"];
+
+			await stroke.init();
+		}
+
+		for (let brush of brushes) {
+			if (brush instanceof BrushGL)
+				await brush.configure(await this.getGLContext());
 		}
 
 		this.dataModel.importModel(inkModel);
