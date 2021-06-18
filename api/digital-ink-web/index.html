@@ -43,34 +43,119 @@
 
 
     <section>
-        <article><h1>README</h1>
-<p>This README would normally document whatever steps are necessary to get your application up and running.</p>
-<h3>What is this repository for?</h3>
+        <article><h1>WILL SDK for ink</h1>
+<p><strong>Wacom Ink Layer Language (WILL™)</strong> is a cross-platform digital ink technology.
+It is based on the needs of the end-user and Wacom's experience with different domains.
+WILL allows you to include premium digital inking features in your applications.
+It uses a modularized pipeline allowing each module to be configured, replaced, or omitted as required by the specific application, providing you with superior flexibility.</p>
+<p>The newly introduced <strong>Universal Ink Model</strong> is a data model describing ink related data structures and meta-data concept to describe the semantic content of ink.
+You can also use the file encoding of the Universal Ink Model to exchange ink content between applications and cross-platform.</p>
+<p>The WILL 3 Framework includes:</p>
 <ul>
-<li>Quick summary</li>
-<li>Version</li>
-<li><a href="https://bitbucket.org/tutorials/markdowndemo">Learn Markdown</a></li>
+<li>Software libraries for multiple platforms (Windows, Android, iOS, Web)</li>
+<li>Code samples illustrating particular functionality</li>
+<li>A web-based <strong>Ink Designer</strong> to configure and test the pipeline</li>
+<li>Comprehensive documentation, including step-by-step guides</li>
 </ul>
-<h3>How do I get set up?</h3>
+<h2>Design Concepts</h2>
+<p>The following is an introduction to the Design Concepts for our WILL technology.</p>
+<h2>Interoperability</h2>
+<p>WILL 3.0 technology and its <strong>Universal Ink Model</strong> is platform and device agnostic, thus the specification does not focus on specific hardware platforms.
+Ink Markup Language <strong>[InkML]</strong> and Ink Serialized Format <strong>[ISF]</strong> are the most well-known formats for storing digital ink besides Wacom Ink Layer Language <strong>[WILL]</strong>.
+The previous version of WILL did not support the storage of sensor data samples for digital ink (e.g., timestamps, (x,y)-coordinates, or pressure values).
+WILL 3.0 gives the ability to store ink sensor samples along with the visual representation of digital ink as well as semantic metadata.
+As a result it is now possible to make a loss-less conversion of the Universal Ink Data format to other existing formats.</p>
+<h3>Natural</h3>
+<p>Digital ink has to look natural and similar to real ink.
+To ensure that the visual appearance of the digital ink can be shared across platforms, WILL 3.0 contains all relevant data to present ink in a consistent way across all platforms.
+By using WILL particle ink rasterization, natural brushes can be configured to create artwork, as illustrated in <em>Figure 1</em>.</p>
+<p><img src="media/overview_artwork.png" alt="Artwork created with raster / particle ink."></p>
+<p><em>Figure 1: Artwork created with raster / particle ink.</em></p>
+<h3>Active</h3>
+<p>Mobile apps, Cloud application, or Cloud services have become a part of modern IT infrastructures.
+Thus, modern data formats need to address issues including:</p>
 <ul>
-<li>Summary of set up</li>
-<li>Configuration</li>
-<li>Dependencies</li>
-<li>Database configuration</li>
-<li>How to run tests</li>
-<li>Deployment instructions</li>
+<li>Unique identifiable IDs for devices</li>
+<li>Streaming capability for partial updates of ink data</li>
+<li>Document size reduction</li>
+<li>Support for commonly used Web Standards such as JSON</li>
 </ul>
-<h3>Contribution guidelines</h3>
+<p><img src="media/overview_active.png" alt="Active."></p>
+<p><em>Figure 2: Active Ink.</em></p>
+<h3>Meta Data and Semantics</h3>
+<p>There are three types of metadata:</p>
 <ul>
-<li>Writing tests</li>
-<li>Code review</li>
-<li>Other guidelines</li>
+<li>Descriptive</li>
+<li>Structural</li>
+<li>Administrative</li>
 </ul>
-<h3>Who do I talk to?</h3>
+<p><em>Descriptive metadata</em> are typically used for discovery and identification, as information used to search and locate an object such as title, author, subject, keyword, and publisher.
+WILL offers metadata for the description of Document and Author in the ink document.</p>
+<p><em>Structural metadata</em> give a description of how the components of an object are organised.
+The metadata for ink can be used to describe the structure of ink documents.</p>
+<p>Finally, <em>administrative metadata</em> give information to help manage the source.
+They refer to the technical information including file type or when and how the file was created.
+Two sub-types of administrative metadata are <em>rights management metadata</em> and <em>preservation metadata</em>.
+Rights management metadata explain intellectual property rights, while preservation metadata contain information that is needed to preserve and save a resource.</p>
+<p><em>Semantic metadata</em> is slowly becoming the differentiator in the vocabulary of many vendors.
+Semantics is the study of meaning.
+As it applies to technology and unstructured content, it represents the ability to extract meaning from words, phrases, sentences, and larger units of text that provide the context within content, and is manually applied or automatically generated as semantic metadata to describe the object.
+Semantic metadata is typically leveraged to improve search, but any application that uses metadata can achieve significant benefits through the generation or application of semantic metadata.
+Thus, WILL metadata is based on established metadata for document and author descriptions and defines its own semantic metadata for ink.</p>
+<h3>Sensor Data and Biometrics</h3>
+<p>Another important objective in the design of the Universal Ink Model is to support the capture of sensor data from ink devices.
+For example, sensor data is used in the context of handwriting analysis, as well as signature capture and verification.</p>
+<p>Some ink devices provide additional information <em>(see Figure 3)</em> that in most use cases is considered less important and may not be supported by all makes or types of devices.
+This includes:</p>
 <ul>
-<li>Repo owner or admin</li>
-<li>Other community or team contact</li>
-</ul></article>
+<li><strong>Pressure</strong> - the force applied to the nib of the pen</li>
+<li><strong>Inclination</strong> - the angle between the pen barrel and vertical</li>
+<li><strong>Orientation</strong> - the plain-direction of the pen from the nib</li>
+<li><strong>Rotation</strong> - the rotation of the barrel during signing</li>
+</ul>
+<p><img src="media/overview_ink_device_sensor_channels.png" alt="Overview ink sensor channels."></p>
+<p><em>Figure 3: Overview ink sensor channels.</em></p>
+<p>The forensic character of the data is of paramount importance, and means that the data-collection philosophy differs in many respects from competing signature technologies.
+A key principle is that during the collection of the signature, the software stores the data exactly as it is supplied by the device.
+Each type of data (e.g. position, time, pressure, etc.) is collected with metric information which describes the units being used by the device, and this is stored with the raw point data to allow the conversion to true units when required.
+The advantage of this is that the accuracy of the information is determined by the device and cannot be compromised by the conversion process.
+In addition to the pen-data, contextual data is collected and stored with the signature.
+This includes:</p>
+<ul>
+<li>The name of the signatory</li>
+<li>The date and time at which the signature was given</li>
+<li>The reason for signing</li>
+<li>The make and type of digitizer being used</li>
+<li>The type and version of the digitizer driver being used</li>
+<li>The type and version of the operating system of the client PC being used</li>
+<li>The Network Interface Card address of the PC</li>
+</ul>
+<p>The objective is to store sensor data and the characteristics of the ink device alongside the visual representation of the digital ink.</p>
+<h2>Technology</h2>
+<p>The WILL technology is designed to be a platform-independent inking engine, providing the most relevant capabilities:</p>
+<ul>
+<li><strong>Ink Geometry Pipeline and Rendering</strong> - Converts sensor data from an input device into a geometry which is rendered by a platform-specific rendering engine</li>
+<li><strong>Ink Serialization</strong> - Exchanges the rendering results, the collected sensor data, and relevant metadata; the Universal Ink Format is used to serialize and de-serialize the information</li>
+<li><strong>Ink Manipulation</strong> - Manipulates the generated geometry; the ink manipulation operations will be able to scale, move, rotate, and erase ink strokes (including exact split)</li>
+</ul>
+<hr>
+<h1>Additional resources</h1>
+<h2>Sample Code</h2>
+<p>For further samples check Wacom's Developer additional samples, see <a href="https://github.com/Wacom-Developer">https://github.com/Wacom-Developer</a></p>
+<h2>Documentation</h2>
+<p>For further details on using the SDK see <a href="http://developer-docs.wacom.com/sdk-for-ink/">WILL SDK for ink documentation</a></p>
+<p>The API Reference is available directly in the downloaded SDK.</p>
+<h2>Support</h2>
+<p>If you experience issues with the technology components, please see related <a href="http://developer-docs.wacom.com/faqs">FAQs</a></p>
+<p>For further support file a ticket in our <strong>Developer Support Portal</strong> described here: <a href="http://developer-docs.wacom.com/faqs/docs/q-support/support">Request Support</a></p>
+<h2>Developer Community</h2>
+<p>Join our developer community:</p>
+<ul>
+<li><a href="https://www.linkedin.com/company/wacom-for-developers/">LinkedIn - Wacom for Developers</a></li>
+<li><a href="https://twitter.com/Wacomdevelopers">Twitter - Wacom for Developers</a></li>
+</ul>
+<h2>License</h2>
+<p>This sample code is licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></p></article>
     </section>
 
 
@@ -81,13 +166,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-fsx.html">fsx</a></li><li><a href="module-math.html">math</a></li></ul><h3>Namespaces</h3><ul><li><a href="Generic.html">Generic</a></li><li><a href="InkInput.html">InkInput</a></li><li><a href="InkModel.html">InkModel</a></li><li><a href="Manipulation.html">Manipulation</a></li><li><a href="PathBuilding.html">PathBuilding</a></li><li><a href="PathBuilding.Pipeline.html">Pipeline</a></li><li><a href="Rasterization.html">Rasterization</a></li><li><a href="Rasterization.2D.html">2D</a></li><li><a href="Rasterization.WebGL.html">WebGL</a></li><li><a href="Semantics.html">Semantics</a></li><li><a href="Serialization.html">Serialization</a></li></ul><h3>Classes</h3><ul><li><a href="Generic.Color.html">Color</a></li><li><a href="Generic.Identifiable.html">Identifiable</a></li><li><a href="Generic.Matrix.html">Matrix</a></li><li><a href="Generic.Point.html">Point</a></li><li><a href="Generic.Rect.html">Rect</a></li><li><a href="InkInput.Environment.html">Environment</a></li><li><a href="InkInput.InkInputProvider.html">InkInputProvider</a></li><li><a href="InkInput.InputContext.html">InputContext</a></li><li><a href="InkInput.InputDevice.html">InputDevice</a></li><li><a href="InkInput.Scalar.html">Scalar</a></li><li><a href="InkInput.SensorChannel.html">SensorChannel</a></li><li><a href="InkInput.SensorChannelsContext.html">SensorChannelsContext</a></li><li><a href="InkInput.SensorContext.html">SensorContext</a></li><li><a href="InkInput.SensorData.html">SensorData</a></li><li><a href="InkInput.SensorStream.html">SensorStream</a></li><li><a href="InkModel.Element.html">Element</a></li><li><a href="InkModel.Group.html">Group</a></li><li><a href="InkModel.InkNode.html">InkNode</a></li><li><a href="InkModel.Path.html">Path</a></li><li><a href="InkModel.View.html">View</a></li><li><a href="InputListener.html">InputListener</a></li><li><a href="Manipulation.Intersector.html">Intersector</a></li><li><a href="Manipulation.Manipulator.html">Manipulator</a></li><li><a href="Manipulation.Selector.html">Selector</a></li><li><a href="Manipulation.SpatialContext.html">SpatialContext</a></li><li><a href="PathBuilding.ConvexHullProducer.html">ConvexHullProducer</a></li><li><a href="PathBuilding.InkBuilder.html">InkBuilder</a></li><li><a href="PathBuilding.InkBuilderAbstract.html">InkBuilderAbstract</a></li><li><a href="PathBuilding.InkBuilderAsync.html">InkBuilderAsync</a></li><li><a href="PathBuilding.InkPath2D.html">InkPath2D</a></li><li><a href="PathBuilding.InterpolatedSpline.html">InterpolatedSpline</a></li><li><a href="PathBuilding.PathPoint.html">PathPoint</a></li><li><a href="PathBuilding.PathPointContext.html">PathPointContext</a></li><li><a href="PathBuilding.html#.PathSegment">PathSegment</a></li><li><a href="PathBuilding.Pipeline.BrushApplier.html">BrushApplier</a></li><li><a href="PathBuilding.Pipeline.ConvexHullChainProducer.html">ConvexHullChainProducer</a></li><li><a href="PathBuilding.Pipeline.CurvatureBasedInterpolator.html">CurvatureBasedInterpolator</a></li><li><a href="PathBuilding.Pipeline.DataProcessor.html">DataProcessor</a></li><li><a href="PathBuilding.Pipeline.DataSequenceProcessor.html">DataSequenceProcessor</a></li><li><a href="PathBuilding.Pipeline.DistanceBasedInterpolator.html">DistanceBasedInterpolator</a></li><li><a href="PathBuilding.Pipeline.PathProducer.html">PathProducer</a></li><li><a href="PathBuilding.Pipeline.PolygonMerger.html">PolygonMerger</a></li><li><a href="PathBuilding.Pipeline.PolygonSimplifier.html">PolygonSimplifier</a></li><li><a href="PathBuilding.Pipeline.Smoother.html">Smoother</a></li><li><a href="PathBuilding.Pipeline.SplineInterpolator.html">SplineInterpolator</a></li><li><a href="PathBuilding.Pipeline.SplineProducer.html">SplineProducer</a></li><li><a href="PathBuilding.PointerData.html">PointerData</a></li><li><a href="PathBuilding.Spline.html">Spline</a></li><li><a href="Rasterization.2D.Brush2D.html">Brush2D</a></li><li><a href="Rasterization.2D.BrushPrototype.html">BrushPrototype</a></li><li><a href="Rasterization.2D.InkCanvas2D.html">InkCanvas2D</a></li><li><a href="Rasterization.2D.OffscreenLayer2D.html">OffscreenLayer2D</a></li><li><a href="Rasterization.2D.ShapeFactory.html">ShapeFactory</a></li><li><a href="Rasterization.2D.StrokeRenderer2D.html">StrokeRenderer2D</a></li><li><a href="Rasterization.Layer.html">Layer</a></li><li><a href="Rasterization.WebGL.BrushGL.html">BrushGL</a></li><li><a href="Rasterization.WebGL.GLProgram.html">GLProgram</a></li><li><a href="Rasterization.WebGL.InkCanvasGL.html">InkCanvasGL</a></li><li><a href="Rasterization.WebGL.InkContext.html">InkContext</a></li><li><a href="Rasterization.WebGL.InkGLContext.html">InkGLContext</a></li><li><a href="Rasterization.WebGL.InkLayer.html">InkLayer</a></li><li><a href="Rasterization.WebGL.OffscreenCanvasGL.html">OffscreenCanvasGL</a></li><li><a href="Rasterization.WebGL.OffscreenLayerGL.html">OffscreenLayerGL</a></li><li><a href="Rasterization.WebGL.RectGL.html">RectGL</a></li><li><a href="Rasterization.WebGL.StrokeDrawContext.html">StrokeDrawContext</a></li><li><a href="Rasterization.WebGL.StrokeRendererGL.html">StrokeRendererGL</a></li><li><a href="Semantics.SemanticTriple.html">SemanticTriple</a></li><li><a href="Semantics.TripleStore.html">TripleStore</a></li><li><a href="Serialization.InkCodec.html">InkCodec</a></li><li><a href="Serialization.InkObjectDecoder.html">InkObjectDecoder</a></li><li><a href="Serialization.InkObjectEncoder.html">InkObjectEncoder</a></li><li><a href="Serialization.TypedArrayCodec.html">TypedArrayCodec</a></li><li><a href="Stroke.html">Stroke</a></li><li><a href="URIResolver.html">URIResolver</a></li></ul><h3>Interfaces</h3><ul><li><a href="InkInput.InkController.html">InkController</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-bundling.html">Webpack Configuration Manual</a></li><li><a href="tutorial-ink-rendering-pipeline.html">Ink Rendering Pipeline</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-fsx.html">fsx</a></li><li><a href="module-math.html">math</a></li></ul><h3>Namespaces</h3><ul><li><a href="Generic.html">Generic</a></li><li><a href="InkInput.html">InkInput</a></li><li><a href="InkModel.html">InkModel</a></li><li><a href="Manipulation.html">Manipulation</a></li><li><a href="PathBuilding.html">PathBuilding</a></li><li><a href="PathBuilding.Pipeline.html">Pipeline</a></li><li><a href="Rasterization.html">Rasterization</a></li><li><a href="Rasterization.2D.html">2D</a></li><li><a href="Rasterization.WebGL.html">WebGL</a></li><li><a href="Semantics.html">Semantics</a></li><li><a href="Serialization.html">Serialization</a></li><li><a href="Serialization.PrecisionDetection.html">PrecisionDetection</a></li></ul><h3>Classes</h3><ul><li><a href="Generic.Color.html">Color</a></li><li><a href="Generic.Identifiable.html">Identifiable</a></li><li><a href="Generic.Matrix.html">Matrix</a></li><li><a href="Generic.Point.html">Point</a></li><li><a href="Generic.Rect.html">Rect</a></li><li><a href="InkInput.Environment.html">Environment</a></li><li><a href="InkInput.InkInputProvider.html">InkInputProvider</a></li><li><a href="InkInput.InputContext.html">InputContext</a></li><li><a href="InkInput.InputDevice.html">InputDevice</a></li><li><a href="InkInput.Scalar.html">Scalar</a></li><li><a href="InkInput.SensorChannel.html">SensorChannel</a></li><li><a href="InkInput.SensorChannelsContext.html">SensorChannelsContext</a></li><li><a href="InkInput.SensorContext.html">SensorContext</a></li><li><a href="InkInput.SensorData.html">SensorData</a></li><li><a href="InkInput.SensorStream.html">SensorStream</a></li><li><a href="InkModel.Element.html">Element</a></li><li><a href="InkModel.Group.html">Group</a></li><li><a href="InkModel.InkModel.html">InkModel</a></li><li><a href="InkModel.InkNode.html">InkNode</a></li><li><a href="InkModel.InkTree.html">InkTree</a></li><li><a href="InkModel.Path.html">Path</a></li><li><a href="InkModel.View.html">View</a></li><li><a href="InputListener.html">InputListener</a></li><li><a href="Manipulation.Intersector.html">Intersector</a></li><li><a href="Manipulation.Manipulator.html">Manipulator</a></li><li><a href="Manipulation.Selector.html">Selector</a></li><li><a href="Manipulation.SpatialContext.html">SpatialContext</a></li><li><a href="PathBuilding.ConvexHullProducer.html">ConvexHullProducer</a></li><li><a href="PathBuilding.InkBuilder.html">InkBuilder</a></li><li><a href="PathBuilding.InkBuilderAbstract.html">InkBuilderAbstract</a></li><li><a href="PathBuilding.InkBuilderAsync.html">InkBuilderAsync</a></li><li><a href="PathBuilding.InkPath2D.html">InkPath2D</a></li><li><a href="PathBuilding.InterpolatedSpline.html">InterpolatedSpline</a></li><li><a href="PathBuilding.PathPoint.html">PathPoint</a></li><li><a href="PathBuilding.PathPointContext.html">PathPointContext</a></li><li><a href="PathBuilding.html#.PathSegment">PathSegment</a></li><li><a href="PathBuilding.Pipeline.BrushApplier.html">BrushApplier</a></li><li><a href="PathBuilding.Pipeline.ConvexHullChainProducer.html">ConvexHullChainProducer</a></li><li><a href="PathBuilding.Pipeline.CurvatureBasedInterpolator.html">CurvatureBasedInterpolator</a></li><li><a href="PathBuilding.Pipeline.DataProcessor.html">DataProcessor</a></li><li><a href="PathBuilding.Pipeline.DataSequenceProcessor.html">DataSequenceProcessor</a></li><li><a href="PathBuilding.Pipeline.DistanceBasedInterpolator.html">DistanceBasedInterpolator</a></li><li><a href="PathBuilding.Pipeline.PathProducer.html">PathProducer</a></li><li><a href="PathBuilding.Pipeline.PolygonMerger.html">PolygonMerger</a></li><li><a href="PathBuilding.Pipeline.PolygonSimplifier.html">PolygonSimplifier</a></li><li><a href="PathBuilding.Pipeline.Smoother.html">Smoother</a></li><li><a href="PathBuilding.Pipeline.SplineInterpolator.html">SplineInterpolator</a></li><li><a href="PathBuilding.Pipeline.SplineProducer.html">SplineProducer</a></li><li><a href="PathBuilding.PointerData.html">PointerData</a></li><li><a href="PathBuilding.Spline.html">Spline</a></li><li><a href="Rasterization.Brush.html">Brush</a></li><li><a href="Rasterization.2D.Brush2D.html">Brush2D</a></li><li><a href="Rasterization.2D.BrushPrototype.html">BrushPrototype</a></li><li><a href="Rasterization.2D.InkCanvas2D.html">InkCanvas2D</a></li><li><a href="Rasterization.2D.OffscreenLayer2D.html">OffscreenLayer2D</a></li><li><a href="Rasterization.2D.ShapeFactory.html">ShapeFactory</a></li><li><a href="Rasterization.2D.StrokeRenderer2D.html">StrokeRenderer2D</a></li><li><a href="Rasterization.Layer.html">Layer</a></li><li><a href="Rasterization.StrokeRenderer.html">StrokeRenderer</a></li><li><a href="Rasterization.WebGL.BrushGL.html">BrushGL</a></li><li><a href="Rasterization.WebGL.GLProgram.html">GLProgram</a></li><li><a href="Rasterization.WebGL.InkCanvasGL.html">InkCanvasGL</a></li><li><a href="Rasterization.WebGL.InkContext.html">InkContext</a></li><li><a href="Rasterization.WebGL.InkGLContext.html">InkGLContext</a></li><li><a href="Rasterization.WebGL.InkLayer.html">InkLayer</a></li><li><a href="Rasterization.WebGL.OffscreenCanvasGL.html">OffscreenCanvasGL</a></li><li><a href="Rasterization.WebGL.OffscreenLayerGL.html">OffscreenLayerGL</a></li><li><a href="Rasterization.WebGL.RectGL.html">RectGL</a></li><li><a href="Rasterization.WebGL.StrokeDrawContext.html">StrokeDrawContext</a></li><li><a href="Rasterization.WebGL.StrokeRendererGL.html">StrokeRendererGL</a></li><li><a href="Semantics.SemanticTriple.html">SemanticTriple</a></li><li><a href="Semantics.TripleStore.html">TripleStore</a></li><li><a href="Serialization.InkCodec.html">InkCodec</a></li><li><a href="Serialization.InkOperation.html">InkOperation</a></li><li><a href="Serialization.InkToolCodec.html">InkToolCodec</a></li><li><a href="Serialization.PrecisionDetection.FixedValuePrecisionCalculator.html">FixedValuePrecisionCalculator</a></li><li><a href="Serialization.PrecisionDetection.PrecisionDetector.html">PrecisionDetector</a></li><li><a href="Serialization.PrecisionDetection.RMSEBasedPrecisionCalculator.html">RMSEBasedPrecisionCalculator</a></li><li><a href="Serialization.PrecisionDetection.VarianceBasedPrecisionCalculator.html">VarianceBasedPrecisionCalculator</a></li><li><a href="Serialization.RIFFDecoder.html">RIFFDecoder</a></li><li><a href="Serialization.RIFFEncoder.html">RIFFEncoder</a></li><li><a href="Serialization.TypedArrayCodec.html">TypedArrayCodec</a></li><li><a href="Stroke.html">Stroke</a></li><li><a href="URIResolver.html">URIResolver</a></li><li><a href="WebIntegrator.html">WebIntegrator</a></li></ul><h3>Interfaces</h3><ul><li><a href="InkInput.InkController.html">InkController</a></li><li><a href="Serialization.PrecisionDetection.PrecisionCalculator.html">PrecisionCalculator</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-bundling.html">Webpack Configuration Manual</a></li><li><a href="tutorial-ink-rendering-pipeline.html">Ink Rendering Pipeline</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Jan 18 2021 15:38:15 GMT+0200 (Eastern European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jun 18 2021 13:20:22 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
