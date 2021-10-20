@@ -1,8 +1,11 @@
 # WILL SDK for ink - Web
 
-## Version 3.0.0
+## Product: WILL 3 / Current Version - Release Code: 3.1
 
 ## History
+
+### 3.0.4   15 Oct 2021
+    * Data encoding process improvements and introduction of compression
   
 ### 3.0.0   25 June 2020
     * Initial v3 version
