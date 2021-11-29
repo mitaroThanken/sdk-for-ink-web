@@ -160,13 +160,18 @@ class InkCanvas extends InkController {
 	}
 
 	erase(pathPart) {
-		if (this.toolID == "eraserStroke") {
+		if (!pathPart.added)
+			return;
+
+		let eraser = config.tools[this.toolID];
+
+		if (eraser.blendMode == BlendMode.DESTINATION_OUT) {
 			this.drawPath(pathPart);
 
 			this.intersector.updateSegmentation(pathPart.added);
 
 			if (pathPart.phase == InkBuilder.Phase.END) {
-				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath(true));
+				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath());
 				this.split(intersection);
 
 				this.abort();
@@ -195,7 +200,7 @@ class InkCanvas extends InkController {
 			this.selector.updateSegmentation(pathPart.added);
 
 		if (pathPart.phase == InkBuilder.Phase.END) {
-			let stroke = this.strokeRenderer.toStroke(this.builder, true);
+			let stroke = this.strokeRenderer.toStroke(this.builder);
 
 			this.abort();
 			this.selection.open(stroke, this.selector);
