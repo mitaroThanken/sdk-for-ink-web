@@ -2,8 +2,6 @@ class SelectionRaster extends Selection {
 	constructor(canvasBridge, options) {
 		super(canvasBridge.lens, options);
 
-		this.convexHullChainProducer = new ConvexHullChainProducer();
-
 		this.canvasBridge = canvasBridge;
 
 		this.maskLayer = this.canvasBridge.canvas.createLayer();
@@ -15,14 +13,12 @@ class SelectionRaster extends Selection {
 	}
 
 	open(stroke) {
-		let path = this.convexHullChainProducer.build([stroke.points]);
-		let bounds = path.bounds;
+		let polygons = Poly.simplify(stroke.spline);
+		if (polygons.length == 0) return;
 
-		path = path.first;
+		super.open(stroke.bounds, stroke.spline);
 
-		super.open(bounds, path);
-
-		this.createRasterSelection(path);
+		this.createRasterSelection(polygons);
 	}
 
 	openRect(pos, bounds, data) {
@@ -33,17 +29,15 @@ class SelectionRaster extends Selection {
 	}
 
 	openPath(pos, path, data, state) {
-		let bounds = Rect.ofPolygon(path);
-
-		super.open(bounds, path, pos, state);
+		super.open(path.bounds, path, pos, state);
 
 		this.createRasterSelection(data);
 		this.refresh();
 	}
 
 	createRasterSelection(input) {
-		if (input instanceof Uint8ClampedArray || input instanceof Uint8Array)
-			this.layer.writePixels(input, this.bounds.transform(this.lens.transform.invert()));
+		if (input instanceof ImageData)
+			this.layer.putImageData(input);
 		else {
 			if (this.type == Selection.Type.PATH) {
 				let dirtyArea = this.maskLayer.fill(input, Color.WHITE, true);
@@ -88,12 +82,19 @@ class SelectionRaster extends Selection {
 	}
 
 	completeTransform() {
-		// this.canvasBridge.history.add();
-
 		let modelTransform = this.lens.transform.multiply(this.lastTransform).multiply(this.lens.transform.invert());
 		let viewTransform = this.lastTransform.multiply(this.lens.transform.invert());
 
-		this.dirtyArea = this.bounds.transform(viewTransform).intersect(this.layer.bounds).ceil();
+		this.dirtyArea = this.bounds.transform(viewTransform).intersect(this.layer.bounds);
+
+		if (this.dirtyArea)
+			this.dirtyArea = this.dirtyArea.ceil();
+		else {
+			console.warn("view transform out of bounds", this.bounds.transform(viewTransform).toString())
+			return;
+		}
+
+		// this.canvasBridge.history.add();
 
 		this.maskLayer.blend(this.layer, {mode: BlendMode.COPY, transform: modelTransform});
 		this.layer.blend(this.maskLayer, {mode: BlendMode.COPY, rect: this.dirtyArea});
@@ -105,18 +106,13 @@ class SelectionRaster extends Selection {
 		if (!this.lastTransformArea)
 			this.extractSelection();
 
-		let transform = this.lens.transform.invert();
-		let path = new InkPath2D(this.path.clone());
-
-		path.transform(transform);
-		path = path.first;
-
 		this.clipboard = {
-			path: path,
-			data: this.layer.readPixels(this.bounds.transform(transform))
+			path: this.selector,
+			data: this.layer.getImageData(this.selector.bounds)
 		};
 
 		if (this.lastOrigin) {
+			let transform = this.lens.transform.invert();
 			let modelTransform = this.lens.transform.multiply(this.lastTransform).multiply(transform);
 
 			this.clipboard.state = {
@@ -132,7 +128,7 @@ class SelectionRaster extends Selection {
 	}
 
 	paste(pos) {
-		this.openPath(pos, Object.clone(this.clipboard.path), this.clipboard.data, this.clipboard.state);
+		this.openPath(pos, this.clipboard.path, this.clipboard.data, this.clipboard.state);
 	}
 
 	delete() {

@@ -628,14 +628,14 @@ let config = {
 			inkBulder: Object.assign({brush: toolConfig.brush}, {
 				layout: context.layout,
 				pathPointCalculator: context.calculate.bind(context),
-				pathPointProps: context.statics
+				pathPointProps: context.statics,
+				concatSegments: (app.type == app.Type.RASTER && toolConfig.brush instanceof Brush2D)
 			}, config.getPipelineOptions(toolConfig))
 		};
 	},
 
 	getPipelineOptions(toolConfig) {
 		let options = Object.assign({}, config.pipeline, toolConfig.pipeline);
-		options.mergePrediction = (app.type == app.Type.RASTER && toolConfig.brush instanceof Brush2D);
 
 		return options;
 	}

@@ -39,7 +39,7 @@ class SelectionVector extends Selection {
 			this.selection = selection;
 
 			bounds = stroke.bounds;
-			path = stroke.points;
+			path = stroke.spline;
 		}
 
 		super.open(bounds, path);
@@ -145,7 +145,7 @@ class SelectionVector extends Selection {
 
 					this.dataModel.getStrokes(Object.keys(intersected)).forEach(stroke => {
 						intersected[stroke.id].intervals.filter(interval => interval.inside).forEach(interval => {
-							strokes.push(stroke.subStroke(interval));
+							strokes.push(stroke.slice(interval));
 						});
 					});
 				}
