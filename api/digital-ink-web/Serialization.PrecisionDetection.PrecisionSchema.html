@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: Manipulation</title>
+    <title>JSDoc: Class: PrecisionSchema</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: Manipulation</h1>
+    <h1 class="page-title">Class: PrecisionSchema</h1>
 
     
 
@@ -28,7 +28,10 @@
 
 <header>
     
-        <h2>Manipulation</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="Serialization.html">Serialization</a><a href="Serialization.PrecisionDetection.html">.PrecisionDetection</a>.</span>PrecisionSchema<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>Contains information for the decimal precision of data in different channels</p></div>
         
     
 </header>
@@ -38,226 +41,23 @@
     
         
 
-        
+    
+    <h2>Constructor</h2>
+    
 
-
-<dl class="details">
-
+    
+    <h4 class="name" id="PrecisionSchema"><span class="type-signature"></span>new PrecisionSchema<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Manipulation.Intersector.html">Intersector</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Manipulation.Manipulator.html">Manipulator</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Manipulation.Selector.html">Selector</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Manipulation.SpatialContext.html">SpatialContext</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id=".Intersection">Intersection</h4>
-
-
-
-
-<div class="description">
-    <p>Collection of intervals. On every partially intersected stroke is available record with stroke id as key and array of intervals.</p>
-</div>
-
-
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Stroke id</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;<a href="Manipulation.html#.Interval">Manipulation.Interval</a>></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Intersection pieces</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
-<h4 class="name" id=".Interval">Interval</h4>
-
-
-
-
-<div class="description">
-    <p>Defines stroke interval</p>
-</div>
 
 
 
@@ -283,6 +83,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -293,129 +95,13 @@
 
         <tr>
             
-                <td class="name"><code>fromPointIndex</code></td>
+                <td class="name"><code>position</code></td>
             
 
             <td class="type">
             
                 
 <span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Start point index</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>toPointIndex</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>End point index</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fromTValue</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">float</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Start T value</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>toTValue</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">float</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>End T value</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inside</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
 
 
             
@@ -432,21 +118,27 @@
             
 
             
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
 
-            <td class="description last"><p>Is interval part of selection. Available only on selecting operations.</p></td>
+            <td class="description last"><p>Variable path point layout properties X, Y, [Z] compression precision. Varies in range [0, 15].</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>size</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string.&lt;GUID></span>
+<span class="param-type">int</span>
 
 
             
@@ -463,8 +155,125 @@
             
 
             
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
 
-            <td class="description last"><p>Interval represents stroke with particular id</p></td>
+            <td class="description last"><p>Variable path point layout properties SIZE compression precision. Varies in range [0, 15]. When is not a part from the layout should be 0.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rotation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>Variable path point layout properties ROTATION compression precision. Varies in range [0, 15]. When is not a part from the layout should be 0.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>Variable path point layout properties SCALE_X, SCALE_Y, [SCALE_Z] compression precision. Varies in range [0, 15]. When is not a part from the layout should be 0.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>offset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>Variable path point layout properties OFFSET_X, OFFSET_Y, [OFFSET_Z] compression precision. Varies in range [0, 15]. When is not a part from the layout should be 0.</p></td>
         </tr>
 
     
@@ -514,15 +323,55 @@
 
 
 
-            
-                
-<h4 class="name" id=".OperationResult">OperationResult</h4>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".encode"><span class="type-signature">(static) </span>encode<span class="signature">(data)</span><span class="type-signature"> &rarr; {int}</span></h4>
+    
+
+    
 
 
 
 <div class="description">
-    <p>Manipulation operation result</p>
+    <p>Encodes precisions values</p>
 </div>
 
 
@@ -531,11 +380,12 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
 
+
+    <h5>Parameters:</h5>
     
 
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -557,13 +407,13 @@
 
         <tr>
             
-                <td class="name"><code>intersected</code></td>
+                <td class="name"><code>data</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="Manipulation.html#.Intersection">Manipulation.Intersection</a></span>
+<span class="param-type">JSON</span>
 
 
             
@@ -573,35 +423,14 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>selected</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Strokes id's</p></td>
+            <td class="description last"><p>Precisions values</p></td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
@@ -646,15 +475,57 @@
 
 
 
-            
-                
-<h4 class="name" id=".Split">Split</h4>
 
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Precisions value</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">int</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="decode"><span class="type-signature"></span>decode<span class="signature">()</span><span class="type-signature"> &rarr; {JSON}</span></h4>
+    
+
+    
 
 
 
 <div class="description">
-    <p>Defines intersection result</p>
+    <p>Decodes precisions value</p>
 </div>
 
 
@@ -663,11 +534,117 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
+
+
+
+
+
+
+<dl class="details">
 
     
 
-<table class="props">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Precisions values</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSON</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(schema)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Updates current schema precisions with better compression values only</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
     <thead>
     <tr>
         
@@ -689,13 +666,13 @@
 
         <tr>
             
-                <td class="name"><code>intersected</code></td>
+                <td class="name"><code>schema</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="Manipulation.html#.StrokeSplit">Manipulation.StrokeSplit</a>></span>
+<span class="param-type"><a href="Serialization.PrecisionDetection.PrecisionSchema.html">Serialization.PrecisionDetection.PrecisionSchema</a></span>
 
 
             
@@ -705,58 +682,14 @@
 
             
 
-            <td class="description last"><p>Splitted strokes</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>selected</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;<a href="Stroke.html">Stroke</a>></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Fully affected strokes</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>dirtyArea</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Generic.Rect.html">Generic.Rect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Affected area</p></td>
+            <td class="description last"><p>Update source</p></td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
@@ -801,16 +734,6 @@
 
 
 
-            
-                
-<h4 class="name" id=".StrokeSplit">StrokeSplit</h4>
-
-
-
-
-<div class="description">
-    <p>Defines intersection result</p>
-</div>
 
 
 
@@ -818,122 +741,16 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
 
+
+
+
+
+
+
+        
     
 
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>stroke</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Stroke.html">Stroke</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Affected stroke</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>strokes</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;<a href="Stroke.html">Stroke</a>></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Extracted strokes based on affected stroke</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
     
 
     
@@ -953,7 +770,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Nov 29 2021 16:14:06 GMT+0200 (Eastern European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Nov 29 2021 16:14:07 GMT+0200 (Eastern European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
