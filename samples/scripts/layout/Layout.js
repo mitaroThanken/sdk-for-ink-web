@@ -10,7 +10,7 @@ let layout = {
 			$("nav .Tool.Selected").removeClass("Selected");
 			$(this).addClass("Selected");
 
-			WILL.setTool(this.id);
+			app.inkCanvas.setTool(this.id);
 		});
 
 		$("nav .ColorBox input[type=color]").on("input", function() {
