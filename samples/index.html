@@ -32,16 +32,20 @@
 			Brush2D, BrushPrototype, ShapeFactory,
 			BrushGL, URIResolver,
 			Intersector, Selector,
-			PathPointContext, InkBuilder,
-			InkPath2D, Stroke,
-			InkModel, SpatialContext, InkCodec,
-			Color, Rect, Point, Matrix,
-			PipelineStage, ConvexHullChainProducer, BlendMode,
+			PathPoint, PathPointContext, InkBuilder,
+			ArrayPath, InkPath2D, Stroke,
+			InkModel, SpatialContext,
+			InkCodec, RMSEBasedPrecisionCalculator, InkToolCodec,
+			Color, Poly, Rect, Point, Matrix,
+			PipelineStage, BlendMode,
 			InkCanvas2D, StrokeRenderer2D,
-			InkCanvasGL, StrokeRendererGL
+			InkCanvasGL, StrokeRendererGL,
+			InkPathProducer
 		} = DigitalInk;
 
 		const {TransformEvent, PinchEvent} = DOMTransformer;
+
+		DigitalInkWebIntegrator.linkWorkers(InkPathProducer);
 	</script>
 
 	<script type="text/javascript" src="./scripts/DataModel.js"></script>
@@ -56,6 +60,7 @@
 	<script type="text/javascript" src="./scripts/InkCanvasVector.js"></script>
 	<script type="text/javascript" src="./scripts/InkCanvasRasterRuntime.js"></script>
 	<script type="text/javascript" src="./scripts/InkCanvasRaster.js"></script>
+	<script type="text/javascript" src="./scripts/InkStorage.js"></script>
 
 	<script type="text/javascript" src="./scripts/selection/CanvasBubble.js"></script>
 	<script type="text/javascript" src="./scripts/selection/CanvasTransformer.js"></script>
@@ -69,12 +74,16 @@
 
 	<script type="text/javascript" src="/scripts/layout/DropDown.js"></script>
 	<script type="text/javascript" src="/scripts/layout/Layout.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/styles/preloader.css" />
+	<script type="text/javascript" src="/scripts/layout/preloader.js"></script>
+
 	<script type="text/javascript" src="/scripts/app.js"></script>
 
 	<script src="./main.js"></script>
 </head>
 <body>
-	<div class="FlexWrapper menu" style="display: none">
+	<div class="flex-wrapper menu" style="display: none">
 		<div>
 			<h2>Samples:</h2>
 
@@ -100,9 +109,9 @@
 				<img src="/images/btn_paper_02.jpg" title="Paper" class="Item Paper" onclick="dropDown.toggle('Papers')" alt="" />
 
 				<label for="load_file" title="Import ink object"><img src="/images/btn_load.png" title="Load" alt="" /></label>
-				<input id="load_file" type="file" class="Button" onchange="WILL.import(this, 'uim');" />
+				<input id="load_file" type="file" class="Button" onchange="app.inkStorage.import(this, 'uim');" />
 
-				<img src="/images/btn_save.png" title="Save" onclick="WILL.save()" alt="" />
+				<img src="/images/btn_save.png" title="Save" onclick="app.inkStorage.save()" alt="" />
 
 				<span class="ColorBox Delimiter">
 					<a href="javascript:void(0)" title="Color" class="Item Color" style="background-color: #4A4A4A;">
@@ -110,7 +119,7 @@
 					</a>
 				</span>
 
-				<img src="/images/btn_clear.png" class="DelimiterRight" title="Clear" onclick="WILL.clear()" alt="" />
+				<img src="/images/btn_clear.png" class="DelimiterRight" title="Clear" onclick="app.inkCanvas.clear()" alt="" />
 
 				<span class="VectorPart">
 					<img id="pen" src="/images/btn_tools/btn_pen.png" title="Pen" class="Tool" alt="" />
@@ -143,7 +152,7 @@
 
 				<img id="customTool" src="/images/btn_tools/btn_toolconfig_tool.png" title="Custom Tool" class="DelimiterLeft Tool Disabled" alt="" />
 				<label for="load_tool" title="Import tool"><img src="/images/btn_import_brush.png" alt="" /></label>
-				<input id="load_tool" type="file" accept="application/protobuf; proto=WacomInkFormat3.Tool" onchange="WILL.import(this, 'tool')" />
+				<input id="load_tool" type="file" accept="application/protobuf; proto=WacomInkFormat3.Tool" onchange="app.inkStorage.import(this, 'tool')" />
 
 				<div class="BackToMenu">
 					<a href="javascript:void(0)" title="Toggle Pointer prediction" class="Button pointerPrediction" onclick="layout.toggleParam('pointerPrediction')">PP</a>
@@ -176,10 +185,19 @@
 
 			<div class="selection selection-vector" style="display: none"></div>
 			<div class="selection selection-raster" style="display: none"></div>
+
+			<div class="preloader" style="display: none">
+				<div class="flex-wrapper">
+					<div class="progress flex-wrapper">
+						<div class="value"></div>
+					</div>
+					<div class="message"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<div class="FlexWrapper Overlay" style="display: none" onclick="this.style = 'display: none'">
+	<div class="flex-wrapper Overlay" style="display: none" onclick="this.style = 'display: none'">
 		<div class="Dialog" onclick="event.stopPropagation()"></div>
 	</div>
 </body>

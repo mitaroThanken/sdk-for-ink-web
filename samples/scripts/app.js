@@ -62,7 +62,7 @@ let app = {
 			toolID = "pen";
 			canvas.className = "vector-canvas";
 
-			config.tools.eraser = config.tools.eraserVector;
+			config.tools.eraser = config.tools.eraserStroke;
 
 			Object.defineProperty(app, "type", {value: app.Type.VECTOR, enumerable: true});
 
@@ -74,8 +74,13 @@ let app = {
 
 		await inkCanvas.init(device, toolID, color);
 
+		let inkStorage = new InkStorage(inkCanvas);
+
+		await inkStorage.importBridge.open();
+		await inkStorage.importBridge.importBrushes(Object.values(this.model.repository).filter(item => item instanceof Brush2D));
+
 		Object.defineProperty(app, "inkCanvas", {value: inkCanvas, enumerable: true});
-		window.WILL = inkCanvas;
+		Object.defineProperty(app, "inkStorage", {value: inkStorage, enumerable: true});
 
 		inkCanvas.resizeStack(width, height);
 
