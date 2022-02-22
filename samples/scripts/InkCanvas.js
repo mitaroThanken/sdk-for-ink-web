@@ -17,8 +17,6 @@ class InkCanvas extends InkController {
 
 		Object.defineProperty(this, "strokes", {get: () => this.dataModel.inkModel.content, enumerable: true});
 		Object.defineProperty(this, "transform", {get: () => this.lens.transform, set: value => (this.lens.transform = value), enumerable: true});
-
-		this.codec = new InkCodec();
 	}
 
 	init(device, toolID, color) {
@@ -162,13 +160,18 @@ class InkCanvas extends InkController {
 	}
 
 	erase(pathPart) {
-		if (this.toolID == "eraserStroke") {
+		if (!pathPart.added)
+			return;
+
+		let eraser = config.tools[this.toolID];
+
+		if (eraser.blendMode == BlendMode.DESTINATION_OUT) {
 			this.drawPath(pathPart);
 
 			this.intersector.updateSegmentation(pathPart.added);
 
 			if (pathPart.phase == InkBuilder.Phase.END) {
-				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath(true));
+				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath());
 				this.split(intersection);
 
 				this.abort();
@@ -197,7 +200,7 @@ class InkCanvas extends InkController {
 			this.selector.updateSegmentation(pathPart.added);
 
 		if (pathPart.phase == InkBuilder.Phase.END) {
-			let stroke = this.strokeRenderer.toStroke(this.builder, true);
+			let stroke = this.strokeRenderer.toStroke(this.builder);
 
 			this.abort();
 			this.selection.open(stroke, this.selector);
@@ -290,104 +293,5 @@ class InkCanvas extends InkController {
 
 		this.dataModel.reset();
 		this.lens.reset();
-	}
-
-	import(input, type) {
-		let reader = new FileReader();
-
-		if (type == "uim")
-			reader.onload = (e) => this.openFile(e.target.result);
-		else if (type == "tool")
-			reader.onload = (e) => this.importTool(e.target.result);
-		else
-			throw new Error(`Unknown or missing import type - ${type}`);
-
-		reader.readAsArrayBuffer(input.files[0]);
-
-		input.value = "";
-	}
-
-	async importTool(buffer) {
-		// Decode serialised tool configuration
-		let data = this.codec.decodeTool(buffer);
-		let error;
-
-		// Check if the brush is either a vector or particle brush
-		if (localStorage.getItem("sample") == 1 && data.brush instanceof BrushGL)
-			error = "Tool data provides raster configuration. Select sample different from this one to use it.";
-		if (localStorage.getItem("sample") == 2 && data.brush instanceof Brush2D)
-			error = "Tool data provides vector configuration. Select sample different from this one to use it.";
-
-		if (error)
-			alert(error);
-		else {
-			let brush = data.brush;
-
-			if (brush instanceof BrushGL) {
-				let canvas = this.inkCanvasRaster ? this.inkCanvasRaster.canvas : this.canvas;
-				await brush.configure(canvas.ctx);
-			}
-
-			config.tools.customTool = {
-				brush: brush,
-				blendMode: data.blendMode,
-				dynamics: data.dynamics,
-				statics: data.statics
-			};
-
-			this.dataModel.importBrush(brush);
-
-			$("#customTool").removeClass("Disabled");
-			layout.selectTool("customTool");
-		}
-	}
-
-	async encode() {
-		return await this.codec.encodeInkModel(this.dataModel.inkModel);
-	}
-
-	decode(buffer) {
-		return this.codec.decodeInkModel(buffer);
-	}
-
-	async save() {
-		let buffer = await this.encode();
-		fsx.saveAs(buffer, "ink.uim", "application/vnd.wacom-ink.model");
-	}
-
-	async openFile(buffer) {
-		let inkModel = await this.codec.decodeInkModel(buffer);
-
-		let error;
-
-		if (localStorage.getItem("sample") == 1 && inkModel.brushes.filter(brush => brush instanceof BrushGL).length > 0)
-			error = "Ink object provides raster configuration. Select sample different from this one to use it.";
-
-		if (localStorage.getItem("sample") == 2 && inkModel.brushes.filter(brush => brush instanceof Brush2D).length > 0)
-			error = "Ink object provides vector configuration. Select sample different from this one to use it.";
-
-		if (error) {
-			alert(error)
-			return;
-		}
-
-		this.clear();
-
-		let {brushes, strokes} = inkModel;
-
-		for (let i = 0; i < strokes.length; i++) {
-			let stroke = strokes[i];
-			stroke.target = (app.type == app.Type.RASTER) ? Stroke.Target["GL"] : Stroke.Target["2D"];
-
-			await stroke.init();
-		}
-
-		for (let brush of brushes) {
-			if (brush instanceof BrushGL)
-				await brush.configure(await this.getGLContext());
-		}
-
-		this.dataModel.importModel(inkModel);
-		this.redraw();
 	}
 }

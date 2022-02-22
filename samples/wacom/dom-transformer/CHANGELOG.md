@@ -1,5 +1,14 @@
 # dom-transformer ChangeLog
 
+## 1.1.0
+
+_2021-12-01_
+
+### Updates
+
+- _TransformEvent_ - enable and disable methods implemented
+- _PinchEvent_ - enable and disable methods implemented
+
 ## 1.0.3
 
 _2021-01-15_

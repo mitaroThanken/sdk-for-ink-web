@@ -161,14 +161,14 @@ class Selection {
 		if (bounds.width < this.minWidth || bounds.height < this.minHeight)
 			bounds = new Rect(bounds.left, bounds.top, Math.max(this.minWidth, bounds.width), Math.max(this.minHeight, bounds.height));
 
+		this.selector = path || ArrayPath.fromRect(bounds);
+
 		if (!this.lens.transform.isIdentity) {
 			bounds = bounds.transform(this.lens.transform);
 
 			if (path) {
-				path = new InkPath2D(path.clone());
-
+				path = path.clone();
 				path.transform(this.lens.transform);
-				path = path.first;
 			}
 
 			if (state) {
@@ -179,7 +179,7 @@ class Selection {
 
 		this.type = path ? Selection.Type.PATH : Selection.Type.RECT;
 		this.bounds = bounds;
-		this.path = path || Rect.fromRect(bounds).toPath().points;
+		this.path = path || ArrayPath.fromRect(bounds);
 
 		let translate;
 
@@ -198,12 +198,8 @@ class Selection {
 	showFrame(bounds, translate, state) {
 		let path = [];
 
-		for (let i = 2; i < this.path.length - 2; i += 2) {
-			let x = this.path[i];
-			let y = this.path[i+1];
-
-			path.push(`${x},${y}`);
-		}
+		for (var i = 0; i < this.path.length; i++)
+			path.push(`${this.path.getPointX(i)},${this.path.getPointY(i)}`);
 
 		this.frame.querySelector("svg").setAttribute("viewBox", bounds.left + " " + bounds.top + " " + bounds.width + " " + bounds.height);
 		this.frame.querySelector("path").setAttribute("d", "M " + path.join(" L ") + " Z");
@@ -304,6 +300,7 @@ class Selection {
 		this.type = null;
 		this.bounds = null;
 		this.path = null;
+		this.selector = null;
 
 		this.lastOrigin = null;
 		this.lastTransform = null;
