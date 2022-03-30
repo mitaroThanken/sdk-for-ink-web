@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<link rel="stylesheet" href="willexports.css">
+	<script src="will/libs/clipper.js"></script>
+	<script src="will/libs/md5.min.js"></script>
+	<script src="will/libs/poly2tri.min.js"></script>
+	<script src="will/libs/long.js"></script>
+	<script src="will/libs/protobuf.min.js"></script>
+	<script src="will/libs/rbush.min.js"></script>
+	<script src="will/libs/gl-matrix-min.js"></script>
+	<script src="will/libs/js-ext-min.js"></script>
+	<script src="will/libs/dom-transformer-min.js"></script>
+	<script src="will/libs/jszip.min.js"></script>
+    <script src="will/libs/digital-ink-min.js"></script>	
+	<script type="text/javascript">
+		const {
+			fsx, Matrix,
+			InputDevice, InputListener,
+			SensorChannel, InkController,
+			Brush2D, BrushPrototype, ShapeFactory,
+			BrushGL, URIResolver,
+			Intersector, Selector,
+			PathPointContext, InkBuilder, Stroke,
+			InkModel, SpatialContext, InkCodec,
+			Color, Rect, BlendMode,
+			InkCanvas2D, StrokeRenderer2D,
+			InkCanvasGL, StrokeRendererGL, OffscreenCanvasGL, 
+			PointerData, InterpolatedSpline
+		} = DigitalInk;
+	</script>	
+	<script src="will/InkCanvas.js"></script>
+	<script src="will/InkCanvasRaster.js"></script>	
+	<script src="will/ValueTransformer.js"></script>
+	<script src="will/URIBuilder.js"></script>
+	<script src="will/BrushPalette.js"></script>
+	<script src="will/Config.js"></script>
+	<script src="will/DataRepository.js"></script>
+	<script src="will/DataModel.js"></script>	
+	<script src="will/NodeTraverser.js"></script>	
+	<script src="willexports.js"></script>		
+  </head>
+  <body>
+    <div>
+	  <label for="myfile">Select a UIM file:</label>
+	  <br/>
+	  <br/>
+	  <input type="file" accept=".uim" id="myfile" name="myfile">
+	  <br/>
+	  <br/>
+	  <fieldset style="border: 1px black solid">
+	      <legend style="border: 1px black solid;margin-left: 1em; padding: 0.2em 0.8em ">Export to PDF</legend>
+		  <p>This example showns how the ink model can be exported to PDF without losing quality when zooming. This only can be achieve with vector inking. So raster strokes will be ignored.</p>
+		  <p>
+  		       PDFs have some fixed dimensions, in this example we export into an A4 PDF. You can either 
+			   <label for="fitCheckBox">fit the image into the document's size checking this check box </label>
+		       <input type="checkbox" id="fitCheckBox" checked="checked">		  
+			   or maintain the original dimensions. In this case the parts that are out of the PDF's size won't be shown.
+		  </p>
+		  <button type="button" id="load_from_file" onClick="exportToPDF();">Export to PDF</button>			  
+	  </fieldset>
+	  <br><br>
+	  <fieldset style="border: 1px black solid">
+	      <legend style="border: 1px black solid;margin-left: 1em; padding: 0.2em 0.8em ">Export to SVG</legend>
+		  <p>This example showns how the ink model can be exported to SVG. SVG it is a vector format, so raster strokes will be ignored.</p>
+		  <button type="button" id="load_from_file" onClick="exportToSVG();">Export to SVG</button>			  
+	  </fieldset>
+	  <br><br>
+	  <fieldset style="border: 1px black solid">
+	      <legend style="border: 1px black solid;margin-left: 1em; padding: 0.2em 0.8em ">Export to Image</legend>
+		  <canvas id="inkCanvas" style="display:none"></canvas>
+		  <p>This example showns how the ink model can be exported to an Raster image. This will work with either Vector and Raster inking.</p>
+		  <p>
+		      JPEG images does not support transparency, so from here you can choose the background color of the image 
+			  <input type="color" id="favcolor" name="favcolor" value="#ffffff">
+			  <br><br>
+			  <button type="button" id="load_from_file" onClick="exportToImage('image/jpeg');">Export to JPEG</button>			  
+		  </p>
+          <p>
+		      If you need a transparent background you can export to PNG format.<br><br>
+			  <button type="button" id="load_from_file" onClick="exportToImage('image/png');">Export to PNG</button>			  
+          </p>		  
+	  </fieldset>
+	</div>
+  </body>
+</html>

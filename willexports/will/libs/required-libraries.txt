@@ -1,0 +1,13 @@
+Please insert the following libraries into this folder:
+
+clipper.js
+digital-ink-min.js
+dom-transformer-min.js
+gl-matrix-min.js
+js-ext-min.js
+jszip.min.js
+long.js
+md5.min.js
+poly2tri.min.js
+protobuf.min.js
+rbush.min.js

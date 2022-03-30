@@ -59,7 +59,7 @@ Now you can access the web-demo via:
 # Sample code description
 
 The sample application demonstrates ink rendering through the use of WILL SDK for ink (v3.0) using a JavaScript implementation.
-Moreover, it shows how the handling of ink data using the Universal Ink Model is realized.
+Moreover, it shows how the handling of ink data using the Universal Ink Model (UIM) is realized.
 
 WILL rendering provides two different kinds of rendering techniques: vector and raster rendering.
 Vector rendering is a technique that fills the stroke boundary of a path with solid color *(see Figure 1.1)* .
@@ -194,13 +194,45 @@ To serialize and deserialize the InkDocument - the data model within memory - th
 
 To decode the content of the *.uim* file `decodeInkDocument` is used to create an `InkDocument`.
 
+## Export utilities
+
+A demo for exporting UIM to other formats can be run by opening the willexports.html file contained within willexports.
+
+### Installation
+
+The demo requires the Web SDK to use. These are in the form of a number of libraries that must be included within ```willexports\will\libs```. The details on how to obtain these libraries are contained within willexports' THIRDPARTY.md.
+
+#### Libraries
+
+- jszip.min.js
+- long.js
+- long.js.map
+- md5.min.js
+- need libraries.txt
+- poly2tri.min.js
+- protobuf.min.js
+- protobuf.min.js.map
+- rbush.min.js
+- clipper.js
+- digital-ink-min.js
+- dom-transformer-min.js
+- gl-matrix-min.js
+- js-ext-min.js
+
+### Demo Appliation
+
+Once the libraries have been added, the application can be used. Choose a Universal Ink Model (UIM) file with the "Choose File" button.
+
+After a file is chosen, the user may export it to a format of their desire.
+
+![Web export](media/web-export.png)
+
+Exporting to PDF and SVG formats only supports Vector Ink. Raster Ink may only be exported to JPG and PNG formats.
+
+When exporting to JPEG or PNG, rather than the file being immediately downloaded, it will appear below the UI for the user to do what they wish with.
+
+![Web render](media/web-render.png)
+
+Subsequent exports will appear beneath the previous export.
 
 ---
-
-
-
-
-
-
-
-
