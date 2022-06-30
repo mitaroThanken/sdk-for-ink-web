@@ -7,9 +7,11 @@ The Javascript extension. Provides additional functionality to classes when they
  * Object
  * String
  * Number
+ * Date
  * Function
  * Array
  * ArrayBuffer
+ * SharedArrayBuffer
  * TypedArray
  * Set
  * Screen
@@ -17,7 +19,6 @@ The Javascript extension. Provides additional functionality to classes when they
  * HTMLElement
  * HTMLImageElement
  * Image
- * Canvas (Adds support for OffscreenCanvas when is not available)
  * DOMPoint
  * DOMRect
  * DOMMatrix

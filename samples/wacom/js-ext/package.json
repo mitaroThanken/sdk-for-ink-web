@@ -1,11 +1,22 @@
 {
   "name": "js-ext",
   "productName": "JavaScript Extensions",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Additional functionality provider",
   "main": "js-ext-min.cjs",
-  "module": "js-ext-min.js",
-  "unpkg": "js-ext-min.js",
+  "module": "./js-ext-min.js",
+  "exports": {
+    ".": {
+      "node": {
+        "import": "./js-ext-min.mjs",
+        "require": "./js-ext-min.cjs"
+      },
+      "browser": {
+        "import": "./js-ext-min.mjs"
+      },
+      "default": "./js-ext-min.js"
+    }
+  },
   "repository": "https://github.com/js-ext.git",
   "author": "Tzvetelin Vassilev",
   "homepage": "https://github.com/js-ext",

@@ -1,5 +1,13 @@
 # js-ext ChangeLog
 
+## 1.0.3
+
+_2022-04-01_
+
+### Updates
+- Date extension added
+- SharedArrayBuffer extension added
+
 ## 1.0.2
 
 _2021-10-01_
