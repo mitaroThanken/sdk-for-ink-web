@@ -53,7 +53,7 @@ class InkStorage {
 			if (brush instanceof BrushGL)
 				await brush.configure(await this.inkController.getGLContext());
 
-			config.tools.customTool = {
+			app.config.tools.customTool = {
 				brush: brush,
 				blendMode: data.blendMode,
 				dynamics: data.dynamics,

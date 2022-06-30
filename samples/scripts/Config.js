@@ -1,10 +1,10 @@
-let context = new PathPointContext();
+const context = new PathPointContext();
 
-let config = {
-	tools: {
+class Config {
+	tools = {
 		/* ******* VECTOR TOOLS ******* */
 		pen: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 
 			dynamics: {
 				size: {
@@ -30,7 +30,7 @@ let config = {
 		},
 
 		felt: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 
 			dynamics: {
 				size: {
@@ -51,7 +51,7 @@ let config = {
 		},
 
 		brush: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 
 			dynamics: {
 				size: {
@@ -106,7 +106,7 @@ let config = {
 		},
 
 		marker: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 			blendMode: BlendMode.DESTINATION_OVER,
 
 			statics: {
@@ -116,7 +116,7 @@ let config = {
 		},
 
 		basic: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 
 			dynamics: {
 				size: {
@@ -148,7 +148,7 @@ let config = {
 
 		/* ******* RASTER TOOLS ******* */
 		pencil: {
-			brush: BrushPalette.pencil,
+			brush: app.brushPalette.pencil,
 
 			dynamics: {
 				size: {
@@ -211,7 +211,7 @@ let config = {
 		},
 
 		waterBrush: {
-			brush: BrushPalette.waterBrush,
+			brush: app.brushPalette.waterBrush,
 
 			dynamics: {
 				size: {
@@ -278,8 +278,8 @@ let config = {
 		},
 
 		inkBrush: {
-			brush: BrushPalette.inkBrush,
-			// brush: BrushPalette.circle,
+			brush: app.brushPalette.inkBrush,
+			// brush: app.brushPalette.circle,
 
 			dynamics: {
 				size: {
@@ -332,7 +332,7 @@ let config = {
 		},
 
 		rainbowBrush: {
-			brush: BrushPalette.rainbowBrush,
+			brush: app.brushPalette.rainbowBrush,
 
 			dynamics: {
 				size: {
@@ -405,7 +405,7 @@ let config = {
 		},
 
 		crayon: {
-			brush: BrushPalette.crayon,
+			brush: app.brushPalette.crayon,
 
 			dynamics: {
 				size: {
@@ -469,7 +469,7 @@ let config = {
 		eraser: undefined,
 
 		eraserVector: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 			intersector: new Intersector(Intersector.Mode.PARTIAL_STROKE),
 
 			dynamics: {
@@ -495,7 +495,7 @@ let config = {
 		},
 
 		eraserRaster: {
-			brush: BrushPalette.eraserGL,
+			brush: app.brushPalette.eraserGL,
 			blendMode: BlendMode.DESTINATION_OUT,
 
 			dynamics: {
@@ -521,7 +521,7 @@ let config = {
 		},
 
 		eraserStroke: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.rhombus,
 			blendMode: BlendMode.DESTINATION_OUT,
 			intersector: new Intersector(Intersector.Mode.PARTIAL_STROKE),
 
@@ -548,7 +548,7 @@ let config = {
 		},
 
 		eraserWholeStroke: {
-			brush: BrushPalette.basic,
+			brush: app.brushPalette.rhombus,
 			intersector: new Intersector(Intersector.Mode.WHOLE_STROKE),
 
 			statics: {
@@ -557,11 +557,16 @@ let config = {
 				green: 255,
 				blue: 255,
 				alpha: 0.5
+			},
+
+			pipeline: {
+				lastPipelineStage: PipelineStage.SPLINE_PRODUCER
+				// lastPipelineStage: PipelineStage.SPLINE_INTERPOLATOR
 			}
 		},
 
 		selector: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 			selector: new Selector(Selector.Mode.PARTIAL_STROKE),
 
 			statics: {
@@ -574,7 +579,7 @@ let config = {
 		},
 
 		selectorWholeStroke: {
-			brush: BrushPalette.circle,
+			brush: app.brushPalette.circle,
 			selector: new Selector(Selector.Mode.WHOLE_STROKE),
 
 			statics: {
@@ -585,17 +590,19 @@ let config = {
 				alpha: 1
 			}
 		}
-	},
+	}
 
-	pipeline: {
+	pipeline = {
 		// movingAverageWindowSize: 15,
 		// errorThreshold: 0.15,
 		// epsilon: 0.1
-	},
+	}
+
+	constructor() {}
 
 	getBrush(toolID) {
 		return this.tools[toolID].brush;
-	},
+	}
 
 	getSize(toolID) {
 		let size;
@@ -611,7 +618,7 @@ let config = {
 			size = {min: size, max: size};
 
 		return size;
-	},
+	}
 
 	getOptions(sample, toolID, color) {
 		let toolConfig = this.tools[toolID];
@@ -630,13 +637,18 @@ let config = {
 				pathPointCalculator: context.calculate.bind(context),
 				pathPointProps: context.statics,
 				concatSegments: (app.type == app.Type.RASTER && toolConfig.brush instanceof Brush2D)
-			}, config.getPipelineOptions(toolConfig))
+			}, this.getPipelineOptions(toolConfig))
 		};
-	},
+	}
 
 	getPipelineOptions(toolConfig) {
-		let options = Object.assign({}, config.pipeline, toolConfig.pipeline);
+		let options = Object.assign({}, this.pipeline, toolConfig.pipeline);
+
+		if (app.type == app.Type.VECTOR && toolConfig.brush instanceof Brush2D && !toolConfig.intersector && !toolConfig.selector) {
+			options.keepSplineParameters = true;
+			options.keepAllData = [PipelineStage.SPLINE_INTERPOLATOR, PipelineStage.BRUSH_APPLIER];
+		}
 
 		return options;
 	}
-};
+}

@@ -31,6 +31,12 @@ let app = {
 		else
 			document.querySelector(".menu").style.display = "";
 
+		if (sample) {
+			this.uriBuilder = new URIBuilder(this.name);
+			this.brushPalette = new BrushPalette();
+			this.config = new Config();
+		}
+
 		window.sample = sample;
 	},
 
@@ -52,7 +58,7 @@ let app = {
 			toolID = "pencil";
 			canvas.className = "raster-canvas";
 
-			config.tools.eraser = config.tools.eraserRaster;
+			this.config.tools.eraser = this.config.tools.eraserRaster;
 
 			Object.defineProperty(app, "type", {value: app.Type.RASTER, enumerable: true});
 
@@ -62,7 +68,7 @@ let app = {
 			toolID = "pen";
 			canvas.className = "vector-canvas";
 
-			config.tools.eraser = config.tools.eraserStroke;
+			this.config.tools.eraser = this.config.tools.eraserStroke;
 
 			Object.defineProperty(app, "type", {value: app.Type.VECTOR, enumerable: true});
 
@@ -77,7 +83,7 @@ let app = {
 		let inkStorage = new InkStorage(inkCanvas);
 
 		await inkStorage.importBridge.open();
-		await inkStorage.importBridge.importBrushes(Object.values(this.model.repository).filter(item => item instanceof Brush2D));
+		await inkStorage.importBridge.importBrushes(Object.values(this.brushPalette.brushes).filter(item => item instanceof Brush2D));
 
 		Object.defineProperty(app, "inkCanvas", {value: inkCanvas, enumerable: true});
 		Object.defineProperty(app, "inkStorage", {value: inkStorage, enumerable: true});

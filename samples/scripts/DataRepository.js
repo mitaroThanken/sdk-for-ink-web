@@ -4,9 +4,7 @@ class DataRepository extends URIResolver {
 	}
 
 	init() {
-		Object.values(BrushPalette).filter(v => (typeof v != "function")).forEach(brush => {
-			this.register(brush.name, brush);
-		});
+		Object.values(app.brushPalette.brushes).forEach(brush => this.register(brush.name, brush));
 
 		this.register("will://generic/action-resolve/RandomInt", DataRepository.randomInt);
 

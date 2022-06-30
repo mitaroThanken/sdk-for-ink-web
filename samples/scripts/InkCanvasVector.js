@@ -43,7 +43,7 @@ class InkCanvasVector extends InkCanvas {
 	async setTool(toolID) {
 		super.setTool(toolID);
 
-		if (config.getBrush(toolID) instanceof BrushGL) {
+		if (app.config.getBrush(toolID) instanceof BrushGL) {
 			await this.activateRasterCanvas();
 
 			this.inkCanvasRaster.setTool(this.toolID);

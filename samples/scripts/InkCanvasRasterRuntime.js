@@ -7,7 +7,7 @@ class InkCanvasRasterRuntime extends InkCanvas {
 	}
 
 	async init(device, toolID, color) {
-		await BrushPalette.configure(this.canvas.ctx);
+		await app.brushPalette.configure(this.canvas.ctx);
 
 		await super.init(device, toolID, color);
 	}
