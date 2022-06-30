@@ -4,6 +4,9 @@
 
 ## History
 
+### 3.0.7   29 June 2022
+    * New, optimised functions; extended, more dynamic options; bug fixes
+
 ### 3.0.4   15 Oct 2021
     * Data encoding process improvements and introduction of compression
   
