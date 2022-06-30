@@ -35,22 +35,22 @@ let layout = {
 	},
 
 	selectPaper: function(paper) {
-		let sheet = Array.from(document.styleSheets).filter(sheet => sheet.title == "main").first;
-		let rule = Array.from(sheet.rules).filter(rule => rule.selectorText == ".Wrapper::before").first;
+		let sheet = Array.from(document.styleSheets).find(sheet => sheet.title == "main");
+		let rule = Array.from(sheet.rules).find(rule => rule.selectorText == ".Wrapper::before");
 
 		rule.style.backgroundImage = `url('/images/papers/${paper}')`;
 	},
 
 	updatePaper(transform) {
-		let sheet = Array.from(document.styleSheets).filter(sheet => sheet.title == "main").first;
-		let rule = Array.from(sheet.rules).filter(rule => rule.selectorText == ".Wrapper::before").first;
+		let sheet = Array.from(document.styleSheets).find(sheet => sheet.title == "main");
+		let rule = Array.from(sheet.rules).find(rule => rule.selectorText == ".Wrapper::before");
 
 		rule.style.transform = transform.toString();
 	},
 
 	setPaperSize(width, height) {
-		let sheet = Array.from(document.styleSheets).filter(sheet => sheet.title == "main").first;
-		let rule = Array.from(sheet.rules).filter(rule => rule.selectorText == ".Wrapper::before").first;
+		let sheet = Array.from(document.styleSheets).find(sheet => sheet.title == "main");
+		let rule = Array.from(sheet.rules).find(rule => rule.selectorText == ".Wrapper::before");
 
 		rule.style.width = `${width}px`;
 		rule.style.height = `${height}px`;

@@ -34,6 +34,8 @@ class InkCanvasVector extends InkCanvas {
 			modelSize: this.originLayer.bounds,
 			lens: this.lens,
 			canvas: this.canvas,
+			strokesLayer: this.strokesLayer,
+			refresh: this.refresh.bind(this),
 			redraw: this.redraw.bind(this)
 		});
 
@@ -59,7 +61,7 @@ class InkCanvasVector extends InkCanvas {
 	}
 
 	async allocateRasterCanvas() {
-		// protector.open();
+		protector.open();
 
 		let canvas = document.querySelector("#raster-runtime");
 
@@ -74,7 +76,7 @@ class InkCanvasVector extends InkCanvas {
 
 		await this.inkCanvasRaster.init(this.builder.device, this.toolID, this.color);
 
-		// protector.close();
+		protector.close();
 	}
 
 	async getGLContext() {
