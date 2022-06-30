@@ -30,8 +30,7 @@ let SelectionListener = {
 
 		$(`.${selection.canvasSelector}`).on("mousedown", function(e) {
 			if (e.buttons != 2) return;
-			// if (e.ctrlKey || e.metaKey) return;
-			if (!e.ctrlKey && !e.metaKey) return;
+			if (e.ctrlKey || e.metaKey || e.shiftKey) return;
 
 			$(`.${selection.canvasSelector}`).contextMenu({x: e.pageX, y: e.pageY});
 

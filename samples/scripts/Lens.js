@@ -39,13 +39,12 @@ class Lens {
 		this.onZoom = this.zoom.bind(this);
 
 		this.onPanStart = function onPanStart(e) {
-			if (e.buttons == 2) lastPoint = {x: e.offsetX, y: e.offsetY};
+			if (!e.ctrlKey && !e.metaKey && !e.shiftKey) return;
+			lastPoint = {x: e.offsetX, y: e.offsetY};
 		}.bind(this);
 
 		this.onPan = function onPan(e) {
-			if (e.buttons != 2) return;
-			// if (!e.ctrlKey && !e.metaKey) return;
-			if (e.ctrlKey || e.metaKey) return;
+			if (!e.ctrlKey && !e.metaKey && !e.shiftKey) return;
 
 			// pen hover before pan end
 			if (!lastPoint) return;
