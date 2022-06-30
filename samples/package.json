@@ -1,7 +1,7 @@
 {
   "name": "will3-sdk-for-ink-web-demo",
   "productName": "WILL3 SDK for Ink - Web Demo",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "WILL 3 - Rendering, Manipulations and Serialization (Universal Ink Model) Demo",
   "main": "main.js",
   "dependencies": {
