@@ -60,7 +60,7 @@ class Selection {
 		const bottomHandleImage = "/images/selection/btn_rotate_bottom.png";
 
 		return `
-			<div class="FlexWrapper">
+			<div class="flex-wrapper">
 				<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" version="1.1">
 					<path stroke-miterlimit="1" />
 				</svg>
@@ -127,7 +127,7 @@ class Selection {
 	}
 
 	onTransform(e) {
-		if (!this.active) return;
+		if (preloader.active || !this.active) return;
 
 		let lastTransformArea = this.lastTransformArea;
 
@@ -142,6 +142,8 @@ class Selection {
 
 	disconnect() {
 		if (!this.frame || !this.frame.mounted) return;
+
+		this.close();
 
 		this.frame.removeEventListener("transformstart", this.onTransformStart);
 		this.frame.removeEventListener("transform", this.onTransform);
@@ -161,7 +163,7 @@ class Selection {
 		if (bounds.width < this.minWidth || bounds.height < this.minHeight)
 			bounds = new Rect(bounds.left, bounds.top, Math.max(this.minWidth, bounds.width), Math.max(this.minHeight, bounds.height));
 
-		this.selector = path || ArrayPath.fromRect(bounds);
+		this.selector = path || Path.fromRect(bounds);
 
 		if (!this.lens.transform.isIdentity) {
 			bounds = bounds.transform(this.lens.transform);
@@ -178,8 +180,8 @@ class Selection {
 		}
 
 		this.type = path ? Selection.Type.PATH : Selection.Type.RECT;
-		this.bounds = bounds;
-		this.path = path || ArrayPath.fromRect(bounds);
+		this.bounds = bounds.ceil();
+		this.path = path || Path.fromRect(bounds);
 
 		let translate;
 
@@ -198,7 +200,7 @@ class Selection {
 	showFrame(bounds, translate, state) {
 		let path = [];
 
-		for (var i = 0; i < this.path.length; i++)
+		for (let i = 0; i < this.path.length; i++)
 			path.push(`${this.path.getPointX(i)},${this.path.getPointY(i)}`);
 
 		this.frame.querySelector("svg").setAttribute("viewBox", bounds.left + " " + bounds.top + " " + bounds.width + " " + bounds.height);
@@ -241,7 +243,7 @@ class Selection {
 
 		this.hideFrame();
 
-		if (this.lastTransformArea)
+		if (this.lastTransform)
 			await this.completeTransform();
 
 		if (onClose)

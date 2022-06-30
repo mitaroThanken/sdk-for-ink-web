@@ -85,12 +85,28 @@ let app = {
 		await inkStorage.importBridge.open();
 		await inkStorage.importBridge.importBrushes(Object.values(this.brushPalette.brushes).filter(item => item instanceof Brush2D));
 
+		if (sample == 1 || sample == 3) {
+			let splitPointsProducer = SplitPointsProducer.getInstance();
+			splitPointsProducer.updateProgress = preloader.setProgress.bind(preloader);
+			await splitPointsProducer.open();
+
+			this.config.tools.eraser.intersector.splitPointsProducer = splitPointsProducer;
+		}
+
 		Object.defineProperty(app, "inkCanvas", {value: inkCanvas, enumerable: true});
 		Object.defineProperty(app, "inkStorage", {value: inkStorage, enumerable: true});
 
 		inkCanvas.resizeStack(width, height);
 
 		layout.selectTool(inkCanvas.toolID);
+
+		preloader.onOpen = () => {
+			inkCanvas.abort();
+
+			InputListener.stop();
+		};
+
+		preloader.onClose = () => InputListener.start();
 
 		InputListener.open(inkCanvas);;
 	},
@@ -102,6 +118,10 @@ let app = {
 			localStorage.setItem("sample", sample);
 
 		location.reload();
+	},
+
+	sleep(time) {
+		return new Promise((resolve, reject) => setTimeout(resolve, time));
 	},
 
 	disbaleZoom: function() {

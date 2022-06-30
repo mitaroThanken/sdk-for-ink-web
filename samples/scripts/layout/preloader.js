@@ -28,10 +28,22 @@ let preloader = {
 		this.setMessage(message);
 
 		this.node.style.display = "";
+
+		this.onOpen();
+	},
+
+	delay(time, bounds, message) {
+		this.timeoutID = setTimeout(() => this.open(bounds, message), time);
+	},
+
+	clearDelay() {
+		clearTimeout(this.timeoutID);
 	},
 
 	close() {
 		this.node.style.display = "none";
+
+		this.onClose();
 	},
 
 	setProgress(value) {
@@ -52,7 +64,11 @@ let preloader = {
 
 			this.message.textContent = "";
 		}
-	}
+	},
+
+	onOpen() {},
+
+	onClose() {}
 };
 
 addEventListener("DOMContentLoaded", preloader.init.bind(preloader));

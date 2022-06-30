@@ -33,19 +33,19 @@
 			BrushGL, URIResolver,
 			Intersector, Selector,
 			PathPoint, PathPointContext, InkBuilder,
-			ArrayPath, InkPath2D, Stroke,
+			Path, InkPath2D, Stroke,
 			InkModel, SpatialContext,
 			InkCodec, RMSEBasedPrecisionCalculator, InkToolCodec,
-			Color, Poly, Rect, Point, Matrix,
+			Color, Polygon, Rect, Point, Matrix,
 			PipelineStage, BlendMode,
 			InkCanvas2D, StrokeRenderer2D,
 			InkCanvasGL, StrokeRendererGL,
-			InkPathProducer
+			InkPathProducer, SplitPointsProducer
 		} = DigitalInk;
 
 		const {TransformEvent, PinchEvent} = DOMTransformer;
 
-		DigitalInkWebIntegrator.linkWorkers(InkPathProducer);
+		DigitalInkWebIntegrator.linkWorkers(InkPathProducer, SplitPointsProducer);
 	</script>
 
 	<script type="text/javascript" src="./scripts/DataModel.js"></script>

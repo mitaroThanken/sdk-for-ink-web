@@ -6,59 +6,79 @@ class DataModel {
 	}
 
 	add(stroke) {
-		this.manipulationsContext.add(stroke);
+		if (app.type == app.Type.VECTOR)
+			this.manipulationsContext.add(stroke);
+
 		return this.inkModel.addPath(stroke);
-	}
-
-	update(intersected, selected = []) {
-		let split = this.manipulationsContext.update(intersected);
-
-		split.intersected.forEach(strokeSplit => {
-			if (strokeSplit.strokes.length == 0)
-				this.remove(strokeSplit.stroke);
-			else
-				this.inkModel.replacePath(strokeSplit.stroke, strokeSplit.strokes);
-		});
-
-		let strokes = this.getStrokes(selected);
-		strokes.forEach(stroke => (split.dirtyArea = stroke.bounds.union(split.dirtyArea)));
-
-		this.remove(...strokes);
-
-		return split;
-	}
-
-	transform(mat, ...strokes) {
-		mat = Matrix.fromMatrix(mat);
-
-		strokes.forEach(stroke => {
-			stroke.transform(mat);
-
-			this.manipulationsContext.reload(stroke);
-		});
 	}
 
 	remove(...strokes) {
 		strokes.forEach(stroke => {
-			this.manipulationsContext.remove(stroke);
+			if (app.type == app.Type.VECTOR)
+				this.manipulationsContext.remove(stroke);
+
 			this.inkModel.removePath(stroke);
 		});
 	}
 
-	getStrokes(strokeIDs) {
-		return strokeIDs.map(strokeID => this.inkModel.getStroke(strokeID));
+	async transform(mat, ...strokes) {
+		mat = Matrix.fromMatrix(mat);
+
+		strokes.forEach(stroke => stroke.spline.transform(mat));
+
+		let settings = {
+			keepAllData: [PipelineStage.SPLINE_INTERPOLATOR, PipelineStage.BRUSH_APPLIER],
+			keepSplineParameters: true
+		};
+
+		await app.inkStorage.importBridge.build(strokes, settings);
+
+		strokes.forEach(stroke => {
+			this.manipulationsContext.reload(stroke);
+		});
 	}
 
-	importModel(inkModel) {
-		this.inkModel = inkModel || new InkModel();
+	async update(manipulation) {
+		let {type, intersected, selected} = manipulation;
 
-		this.inkModel.brushes.forEach(brush => {
-			this.repository.register(brush.name, brush);
-		});
+		let dirtyArea;
+		let rebuild = [];
 
-		this.inkModel.strokes.forEach(stroke => {
-			this.manipulationsContext.add(stroke);
-		});
+		for (let strokeID in intersected) {
+			let stroke = this.inkModel.getStroke(strokeID);
+			let strokes = stroke.split(intersected[strokeID]);
+
+			dirtyArea = stroke.bounds.union(dirtyArea);
+			rebuild.push(...strokes);
+
+			this.inkModel.replacePath(stroke, strokes);
+			this.manipulationsContext.remove(stroke);
+		}
+
+		if (rebuild.length > 0) {
+			let settings = {
+				keepAllData: [PipelineStage.SPLINE_INTERPOLATOR, PipelineStage.BRUSH_APPLIER],
+				keepSplineParameters: true
+			};
+
+			await app.inkStorage.importBridge.build(rebuild, settings);
+
+			for (let stroke of rebuild)
+				this.manipulationsContext.add(stroke);
+		}
+
+		for (let strokeID of selected) {
+			let stroke = this.inkModel.getStroke(strokeID);
+
+			dirtyArea = stroke.bounds.union(dirtyArea);
+
+			if (type == "INTERSECTION") {
+				this.manipulationsContext.remove(stroke);
+				this.inkModel.removePath(stroke);
+			}
+		}
+
+		return dirtyArea;
 	}
 
 	importBrush(brush) {
@@ -66,7 +86,37 @@ class DataModel {
 	}
 
 	getBrush(name) {
-		return this.repository.getBrush(name);
+		return this.repository.get(name);
+	}
+
+	getStrokes(strokeIDs) {
+		return strokeIDs.map(strokeID => this.inkModel.getStroke(strokeID));
+	}
+
+	calcBounds(strokes) {
+		let bounds;
+
+		for (let stroke of strokes)
+			bounds = stroke.bounds.union(bounds);
+
+		return bounds;
+	}
+
+	importModel(inkModel) {
+		this.inkModel = inkModel || new InkModel();
+
+		if (this.inkModel.strokes.length == 0)
+			return;
+
+		this.inkModel.brushes.forEach(brush => {
+			this.repository.register(brush.name, brush);
+		});
+
+		if (app.type == app.Type.VECTOR) {
+			this.inkModel.strokes.forEach(stroke => {
+				this.manipulationsContext.add(stroke);
+			});
+		}
 	}
 
 	reset(inkModel) {

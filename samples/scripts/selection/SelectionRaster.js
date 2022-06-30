@@ -13,7 +13,8 @@ class SelectionRaster extends Selection {
 	}
 
 	open(stroke) {
-		let polygons = Poly.simplify(stroke.spline);
+		let poly = new Polygon(stroke.spline);
+		let polygons = poly.simplify();
 		if (polygons.length == 0) return;
 
 		super.open(stroke.bounds, stroke.spline);
@@ -68,11 +69,10 @@ class SelectionRaster extends Selection {
 
 	cutOutSelection() {
 		this.canvasBridge.strokesLayer.blend(this.maskLayer, {mode: BlendMode.DESTINATION_OUT});
+		this.maskLayer.clear();
 	}
 
 	beginTransform() {
-		// this.canvasBridge.history.add();
-
 		this.extractSelection();
 		this.cutOutSelection();
 	}
@@ -94,8 +94,6 @@ class SelectionRaster extends Selection {
 			return;
 		}
 
-		// this.canvasBridge.history.add();
-
 		this.maskLayer.blend(this.layer, {mode: BlendMode.COPY, transform: modelTransform});
 		this.layer.blend(this.maskLayer, {mode: BlendMode.COPY, rect: this.dirtyArea});
 
@@ -103,7 +101,7 @@ class SelectionRaster extends Selection {
 	}
 
 	copy(cut) {
-		if (!this.lastTransformArea)
+		if (!this.lastTransform)
 			this.extractSelection();
 
 		this.clipboard = {
@@ -132,8 +130,6 @@ class SelectionRaster extends Selection {
 	}
 
 	delete() {
-		// this.canvasBridge.history.add();
-
 		this.layer.clear();
 		this.canvasBridge.strokesLayer.blend(this.maskLayer, {mode: BlendMode.DESTINATION_OUT});
 
@@ -143,7 +139,7 @@ class SelectionRaster extends Selection {
 	}
 
 	async export() {
-		if (!this.lastTransformArea)
+		if (!this.lastTransform)
 			this.extractSelection();
 
 		this.close(async () => {

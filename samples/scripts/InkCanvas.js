@@ -2,11 +2,37 @@ class InkCanvas extends InkController {
 	constructor() {
 		super();
 
+		let queue = Promise.resolve();
+		let queueLength = 0;
+
 		this.builder = new InkBuilder();
 
 		this.builder.onComplete = (pathPart) => {
-			if (this.intersector)
-				this.erase(pathPart);
+			if (this.intersector) {
+				let eraser = app.config.tools[this.toolID];
+
+				if (eraser.blendMode != BlendMode.DESTINATION_OUT) {
+					pathPart = {
+						phase: pathPart.phase,
+						added: pathPart.added ? pathPart.added.clone() : pathPart.added
+					}
+				}
+
+				pathPart.toolID = this.toolID;
+				pathPart.intersector = this.intersector;
+
+				if (queueLength == 0)
+					InputListener.stop();
+
+				queueLength++;
+
+				queue = queue.then(this.erase.bind(this, pathPart)).then(() => {
+					queueLength--;
+
+					if (queueLength == 0)
+						InputListener.start();
+				});
+			}
 			else if (this.selector)
 				this.select(pathPart);
 			else
@@ -29,8 +55,8 @@ class InkCanvas extends InkController {
 	setTool(toolID) {
 		this.toolID = toolID;
 
-		this.intersector = config.tools[toolID].intersector;
-		this.selector = config.tools[toolID].selector;
+		this.intersector = app.config.tools[toolID].intersector;
+		this.selector = app.config.tools[toolID].selector;
 		/*
 		if (this.toolID == "basic") {
 			this.device = this.builder.device;
@@ -67,7 +93,7 @@ class InkCanvas extends InkController {
 	}
 
 	reset(sensorPoint) {
-		let options = config.getOptions(sensorPoint, this.toolID, this.color);
+		let options = app.config.getOptions(sensorPoint, this.toolID, this.color);
 
 		this.builder.configure(options.inkBulder);
 		this.strokeRenderer.configure(options.strokeRenderer);
@@ -91,7 +117,7 @@ class InkCanvas extends InkController {
 		this.builder.build();
 	}
 
-	move(sensorPoint, prediction) {
+	move(sensorPoint, prediction, e) {
 		if (app.downsampling && this.requested) {
 			this.builder.ignore(sensorPoint);
 			return;
@@ -159,51 +185,80 @@ class InkCanvas extends InkController {
 			this.strokeRenderer.blendUpdatedArea();
 	}
 
-	erase(pathPart) {
-		if (!pathPart.added)
-			return;
-
-		let eraser = config.tools[this.toolID];
+	async erase(pathPart) {
+		let eraser = app.config.tools[pathPart.toolID];
 
 		if (eraser.blendMode == BlendMode.DESTINATION_OUT) {
 			this.drawPath(pathPart);
 
-			this.intersector.updateSegmentation(pathPart.added);
-
 			if (pathPart.phase == InkBuilder.Phase.END) {
-				let intersection = this.intersector.intersectSegmentation(this.builder.getInkPath());
-				this.split(intersection);
+				let stroke = this.strokeRenderer.toStroke(this.builder);
 
-				this.abort();
+				if (pathPart.intersector.splitPointsProducer)
+					preloader.delay(1500, stroke.bounds, "Erase in progress (intersect). Please wait...");
+				else
+					await protector.open(true);
+
+				let intersection = await pathPart.intersector.intersect(stroke);
+
+				preloader.clearDelay();
+				preloader.setMessage("Erase in progress (split). Please wait...");
+
+				let dirtyArea = await this.dataModel.update(intersection);
+
+				if (dirtyArea) {
+					if (sample == 3)
+						dirtyArea = stroke.bounds.union(dirtyArea);
+
+					dirtyArea.model = true;
+					this.redraw(dirtyArea);
+				}
+
+				if (pathPart.intersector.splitPointsProducer)
+					preloader.close();
+				else
+					protector.close();
 			}
 		}
+		// instant
 		else {
-			let intersection = this.intersector.intersect(pathPart.added);
-			this.split(intersection);
+			if (!pathPart.added)
+				return;
+
+			let interpolatedSpline = pathPart.added;
+			let intersection = await pathPart.intersector.intersect(interpolatedSpline, app.config.tools[this.toolID].brush);
+
+			if (intersection.length > 0) {
+				let dirtyArea = await this.dataModel.update(intersection);
+				dirtyArea.model = true;
+
+				this.redraw(dirtyArea);
+			}
 		}
 	}
 
-	split(intersection) {
-		let split = this.dataModel.update(intersection.intersected, intersection.selected);
-		let dirtyArea = split.dirtyArea;
-
-		if (dirtyArea) {
-			dirtyArea.model = true;
-			this.redraw(dirtyArea);
-		}
-	}
-
-	select(pathPart) {
+	async select(pathPart) {
 		this.drawPath(pathPart);
-
-		if (this.selection instanceof SelectionVector)
-			this.selector.updateSegmentation(pathPart.added);
 
 		if (pathPart.phase == InkBuilder.Phase.END) {
 			let stroke = this.strokeRenderer.toStroke(this.builder);
 
-			this.abort();
-			this.selection.open(stroke, this.selector);
+			if (this.selection instanceof SelectionVector) {
+				await protector.open(true);
+
+				let selection = this.selector.select(stroke);
+
+				if (selection.length > 0)
+					this.selection.open(this.selector.mode, selection, stroke);
+				else
+					console.warn("data not found");
+
+				protector.close();
+			}
+			else
+				this.selection.open(stroke);
+
+			this.refresh(this.lens.modelToView(stroke.bounds));
 		}
 	}
 
