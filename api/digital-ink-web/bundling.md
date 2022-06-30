@@ -23,14 +23,13 @@ module.exports = function override(config, env) {​​​​​​​​
 		config.plugins = [];
 	}​​​​​​​
 
-	config.externals = [...config.externals, 'bindings', 'canvas', 'gl', 'systeminformation'];
+	config.externals = [...config.externals, 'bindings', 'worker_threads', 'canvas', 'gl', 'systeminformation'];
 
 	config = rewireProvidePlugin(config, env, {​​​​​​​​
 		// expose some of public dependencies - these ones which do not provides ECMA 6 exports
 		ClipperLib: 'clipper-lib',
 		poly2tri: 'poly2tri',
 		protobuf: 'protobufjs',
-		Long: 'long',
 		md5: 'js-md5'
 	}​​​​​​​​);
 
@@ -70,7 +69,7 @@ export default {
 			if (ctx.isDev && ctx.isClient) {
 				...
 
-				config.externals = ['bindings', 'canvas', 'gl', 'systeminformation']
+				config.externals = ['bindings', 'worker_threads', 'canvas', 'gl', 'systeminformation']
 
 				// exclude commonjs dependencies
 				config.node = {
@@ -88,7 +87,6 @@ export default {
 				ClipperLib: 'clipper-lib',
 				poly2tri: 'poly2tri',
 				protobuf: 'protobufjs',
-				Long: 'long',
 				md5: 'js-md5'
 			}),
 
