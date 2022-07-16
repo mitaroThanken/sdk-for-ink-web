@@ -12,7 +12,7 @@
     "jquery-contextmenu": "^2.9.2"
   },
   "scripts": {
-    "preinstall": "source ./preinstall.sh",
+    "preinstall": "./preinstall.sh",
     "start": "node ./server.mjs"
   },
   "author": "Tzvetelin Vassilev",
